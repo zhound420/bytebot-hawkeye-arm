@@ -1,7 +1,7 @@
 import { Injectable, Logger, Optional } from '@nestjs/common';
 import { OCRDetector } from '../detectors/ocr/ocr-detector';
 import { CVActivityIndicatorService } from './cv-activity-indicator.service';
-import { HoloClientService } from './omniparser-client.service';
+import { OmniParserClientService } from './omniparser-client.service';
 import { DetectedElement, BoundingBox } from '../types';
 
 export interface EnhancedDetectionOptions {
@@ -39,17 +39,17 @@ export class EnhancedVisualDetectorService {
 
   constructor(
     private readonly cvActivity: CVActivityIndicatorService,
-    @Optional() private readonly holoClient?: HoloClientService,
+    @Optional() private readonly omniParserClient?: OmniParserClientService,
   ) {
     this.ocrDetector = new OCRDetector();
-    this.logger.log('Enhanced Visual Detector Service initialized (Holo 1.5-7B + OCR)');
+    this.logger.log('Enhanced Visual Detector Service initialized (OmniParser + OCR only)');
 
-    if (this.holoClient) {
-      this.holoClient.isAvailable().then((available) => {
+    if (this.omniParserClient) {
+      this.omniParserClient.isAvailable().then((available) => {
         if (available) {
-          this.logger.log('✓ Holo 1.5-7B integration enabled');
+          this.logger.log('✓ OmniParser integration enabled');
         } else {
-          this.logger.warn('Holo 1.5-7B client registered but service unavailable');
+          this.logger.warn('OmniParser client registered but service unavailable');
         }
       });
     }
@@ -73,25 +73,25 @@ export class EnhancedVisualDetectorService {
     const allElements: DetectedElement[] = [];
     const performance: any = {};
 
-    // Default Holo to enabled when service is available
-    const holoAvailable = await this.holoClient?.isAvailable() ?? false;
+    // Default OmniParser to enabled when service is available
+    const omniParserAvailable = await this.omniParserClient?.isAvailable() ?? false;
 
     const {
       useOCR = false, // OCR is expensive, use as fallback only
-      useOmniParser = holoAvailable, // Default to enabled when service is healthy (legacy param name)
+      useOmniParser = omniParserAvailable, // Default to enabled when service is healthy
       confidenceThreshold = 0.6,
       maxResults = 20,
       combineResults = true
     } = options;
 
     try {
-      // Run Holo 1.5 and OCR in parallel since both are I/O-bound
-      const [holoResults, ocrResults] = await Promise.all([
-        useOmniParser && this.holoClient
+      // Run OmniParser and OCR in parallel since both are I/O-bound
+      const [omniParserResults, ocrResults] = await Promise.all([
+        useOmniParser && this.omniParserClient
           ? (async () => {
-              const holoStart = Date.now();
-              const results = await this.runHoloDetection(screenshotBuffer, options);
-              performance.holoTime = Date.now() - holoStart;
+              const omniParserStart = Date.now();
+              const results = await this.runOmniParserDetection(screenshotBuffer, options);
+              performance.omniParserTime = Date.now() - omniParserStart;
               return results;
             })()
           : Promise.resolve([]),
@@ -105,11 +105,11 @@ export class EnhancedVisualDetectorService {
           : Promise.resolve([])
       ]);
 
-      if (holoResults.length > 0) {
-        methodsUsed.push('holo-1.5-7b');
-        allElements.push(...holoResults);
+      if (omniParserResults.length > 0) {
+        methodsUsed.push('omniparser');
+        allElements.push(...omniParserResults);
         // Log at INFO level so it's visible in logs (not just DEBUG)
-        this.logger.log(`🔍 Holo 1.5-7B localized ${holoResults.length} elements`);
+        this.logger.log(`🔍 OmniParser detected ${omniParserResults.length} semantic elements`);
       }
 
       if (ocrResults.length > 0) {
@@ -147,7 +147,7 @@ export class EnhancedVisualDetectorService {
   }
 
   /**
-   * Quick UI element detection using Holo 1.5-7B only
+   * Quick UI element detection using OmniParser only
    * Optimized for speed over comprehensiveness
    */
   async quickDetectElements(
@@ -162,11 +162,11 @@ export class EnhancedVisualDetectorService {
   }
 
   /**
-   * Specialized button detection using Holo 1.5-7B for precision localization
+   * Specialized button detection using OmniParser for semantic understanding
    */
   async detectButtons(screenshotBuffer: Buffer): Promise<EnhancedDetectionResult> {
     return this.detectElements(screenshotBuffer, null, {
-      useOmniParser: true, // Legacy param name, means "use Holo"
+      useOmniParser: true,
       useOCR: false,
     });
   }
@@ -186,25 +186,25 @@ export class EnhancedVisualDetectorService {
     });
   }
 
-  private async runHoloDetection(screenshotBuffer: Buffer, options: EnhancedDetectionOptions) {
-    const activityId = this.cvActivity.startMethod('holo-1.5-7b', {
+  private async runOmniParserDetection(screenshotBuffer: Buffer, options: EnhancedDetectionOptions) {
+    const activityId = this.cvActivity.startMethod('omniparser', {
       captions: options.omniParserCaptions ?? true,
       confidence_threshold: options.omniParserConfidence ?? 0.3,
     });
 
     try {
-      if (!this.holoClient) {
-        throw new Error('Holo 1.5-7B client not available');
+      if (!this.omniParserClient) {
+        throw new Error('OmniParser client not available');
       }
 
       // Check if service is available
-      const available = await this.holoClient.isAvailable();
+      const available = await this.omniParserClient.isAvailable();
       if (!available) {
-        throw new Error('Holo 1.5-7B service is not responding');
+        throw new Error('OmniParser service is not responding');
       }
 
-      // Call Holo 1.5-7B service with Buffer
-      const response = await this.holoClient.parseScreenshot(screenshotBuffer, {
+      // Call OmniParser service with Buffer
+      const response = await this.omniParserClient.parseScreenshot(screenshotBuffer, {
         includeCaptions: options.omniParserCaptions ?? true,
         minConfidence: options.omniParserConfidence ?? 0.3,
       });
@@ -218,7 +218,7 @@ export class EnhancedVisualDetectorService {
 
       // Convert to DetectedElement format
       const elements = response.elements.map((element, index) => ({
-        id: `holo_${Date.now()}_${index}`,
+        id: `omniparser_${Date.now()}_${index}`,
         type: this.inferElementTypeFromCaption(element.caption),
         coordinates: {
           x: element.bbox[0],
@@ -230,18 +230,18 @@ export class EnhancedVisualDetectorService {
         },
         confidence: element.confidence,
         text: element.caption || '',
-        description: element.caption ? `${element.caption} (Holo localized)` : 'Interactive element',
+        description: element.caption ? `${element.caption} (AI detected)` : 'Interactive element',
         metadata: {
-          detectionMethod: 'holo-1.5-7b' as const,
-          holo_type: element.type,
-          task_caption: element.caption,
+          detectionMethod: 'omniparser' as const,
+          omniparser_type: element.type,
+          semantic_caption: element.caption,
         }
       }));
 
       this.cvActivity.stopMethod(activityId, true, elements);
       return elements;
     } catch (error) {
-      this.logger.warn('Holo 1.5-7B detection failed:', error.message);
+      this.logger.warn('OmniParser detection failed:', error.message);
       this.cvActivity.stopMethod(activityId, false, { error: error.message });
       return [];
     }
