@@ -241,10 +241,12 @@ fi
 echo -e "${BLUE}Building services (forced x86_64 architecture for consistency)...${NC}"
 
 # Determine profile based on platform selection
-PROFILE_ARG=""
 if [ "$DESKTOP_PLATFORM" = "windows" ]; then
     PROFILE_ARG="--profile omnibox"
     echo -e "${BLUE}Including Windows desktop (OmniBox) services...${NC}"
+else
+    PROFILE_ARG="--profile linux"
+    echo -e "${BLUE}Including Linux desktop (bytebotd) services...${NC}"
 fi
 
 if [[ "$ARCH" == "arm64" ]] && [[ "$PLATFORM" == "macOS" ]]; then
@@ -252,21 +254,19 @@ if [[ "$ARCH" == "arm64" ]] && [[ "$PLATFORM" == "macOS" ]]; then
     echo -e "${BLUE}Building without OmniParser container (using native)...${NC}"
     # Build without OmniParser container (running natively with MPS)
     docker compose $PROFILE_ARG -f $COMPOSE_FILE build \
-        bytebot-desktop \
+        $([ "$DESKTOP_PLATFORM" = "windows" ] && echo "omnibox omnibox-adapter" || echo "bytebot-desktop") \
         bytebot-agent \
         bytebot-ui \
-        $([ "$COMPOSE_FILE" = "docker-compose.proxy.yml" ] && echo "bytebot-llm-proxy" || echo "") \
-        $([ "$DESKTOP_PLATFORM" = "windows" ] && echo "omnibox omnibox-adapter" || echo "")
+        $([ "$COMPOSE_FILE" = "docker-compose.proxy.yml" ] && echo "bytebot-llm-proxy" || echo "")
 
     echo ""
     echo -e "${BLUE}Starting services...${NC}"
     docker compose $PROFILE_ARG -f $COMPOSE_FILE up -d --no-deps \
-        bytebot-desktop \
+        $([ "$DESKTOP_PLATFORM" = "windows" ] && echo "omnibox omnibox-adapter" || echo "bytebot-desktop") \
         bytebot-agent \
         bytebot-ui \
         postgres \
-        $([ "$COMPOSE_FILE" = "docker-compose.proxy.yml" ] && echo "bytebot-llm-proxy" || echo "") \
-        $([ "$DESKTOP_PLATFORM" = "windows" ] && echo "omnibox omnibox-adapter" || echo "")
+        $([ "$COMPOSE_FILE" = "docker-compose.proxy.yml" ] && echo "bytebot-llm-proxy" || echo "")
 else
     # Linux and Windows (WSL) - build everything including OmniParser
     echo -e "${BLUE}Building all services including OmniParser...${NC}"

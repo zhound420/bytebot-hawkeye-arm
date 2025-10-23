@@ -45,6 +45,8 @@ services:
         condition: service_healthy
     networks:
       - bytebot-network
+    profiles:
+      - linux  # Only start when Linux desktop is selected
 
   postgres:
     image: ${BYTEBOT_POSTGRES_IMAGE:-public.ecr.aws/docker/library/postgres:16-alpine}

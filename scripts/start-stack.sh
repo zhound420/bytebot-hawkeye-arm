@@ -148,22 +148,23 @@ if [[ "$ARCH" == "arm64" ]] && [[ "$OS" == "Darwin" ]]; then
         echo -e "${BLUE}Starting Docker stack (without OmniParser container)...${NC}"
 
         # Determine profile based on platform selection
-        PROFILE_ARG=""
         if [ "$DESKTOP_PLATFORM" = "windows" ]; then
             PROFILE_ARG="--profile omnibox"
             echo -e "${BLUE}Including Windows desktop (OmniBox) services...${NC}"
+        else
+            PROFILE_ARG="--profile linux"
+            echo -e "${BLUE}Including Linux desktop (bytebotd) services...${NC}"
         fi
 
         # Start all services except OmniParser container
         # --no-deps prevents starting dependent services (bytebot-omniparser)
         # Add --build flag to rebuild if code changed
         docker compose $PROFILE_ARG -f $COMPOSE_FILE up -d --build --no-deps \
-            bytebot-desktop \
+            $([ "$DESKTOP_PLATFORM" = "windows" ] && echo "omnibox omnibox-adapter" || echo "bytebot-desktop") \
             bytebot-agent \
             bytebot-ui \
             postgres \
-            $([ "$COMPOSE_FILE" = "docker-compose.proxy.yml" ] && echo "bytebot-llm-proxy" || echo "") \
-            $([ "$DESKTOP_PLATFORM" = "windows" ] && echo "omnibox omnibox-adapter" || echo "")
+            $([ "$COMPOSE_FILE" = "docker-compose.proxy.yml" ] && echo "bytebot-llm-proxy" || echo "")
 
     else
         echo -e "${YELLOW}⚠ Native OmniParser not running${NC}"
@@ -226,21 +227,22 @@ if [[ "$ARCH" == "arm64" ]] && [[ "$OS" == "Darwin" ]]; then
         echo -e "${BLUE}Starting Docker stack (without OmniParser container)...${NC}"
 
         # Determine profile based on platform selection
-        PROFILE_ARG=""
         if [ "$DESKTOP_PLATFORM" = "windows" ]; then
             PROFILE_ARG="--profile omnibox"
             echo -e "${BLUE}Including Windows desktop (OmniBox) services...${NC}"
+        else
+            PROFILE_ARG="--profile linux"
+            echo -e "${BLUE}Including Linux desktop (bytebotd) services...${NC}"
         fi
 
         # --no-deps prevents starting dependent services (bytebot-omniparser)
         # Add --build flag to rebuild if code changed
         docker compose $PROFILE_ARG -f $COMPOSE_FILE up -d --build --no-deps \
-            bytebot-desktop \
+            $([ "$DESKTOP_PLATFORM" = "windows" ] && echo "omnibox omnibox-adapter" || echo "bytebot-desktop") \
             bytebot-agent \
             bytebot-ui \
             postgres \
-            $([ "$COMPOSE_FILE" = "docker-compose.proxy.yml" ] && echo "bytebot-llm-proxy" || echo "") \
-            $([ "$DESKTOP_PLATFORM" = "windows" ] && echo "omnibox omnibox-adapter" || echo "")
+            $([ "$COMPOSE_FILE" = "docker-compose.proxy.yml" ] && echo "bytebot-llm-proxy" || echo "")
 
         # Exit here so we don't run the code below
         echo ""
@@ -291,10 +293,12 @@ elif [[ "$ARCH" == "x86_64" ]] || [[ "$ARCH" == "amd64" ]]; then
     echo -e "${BLUE}Starting full Docker stack (includes OmniParser container)...${NC}"
 
     # Determine profile based on platform selection
-    PROFILE_ARG=""
     if [ "$DESKTOP_PLATFORM" = "windows" ]; then
         PROFILE_ARG="--profile omnibox"
         echo -e "${BLUE}Including Windows desktop (OmniBox) services...${NC}"
+    else
+        PROFILE_ARG="--profile linux"
+        echo -e "${BLUE}Including Linux desktop (bytebotd) services...${NC}"
     fi
 
     docker compose $PROFILE_ARG -f $COMPOSE_FILE up -d --build
