@@ -172,6 +172,83 @@ services:
       retries: 3
       start_period: 60s
 
+  # OmniBox - Windows 11 Desktop for AI Agents
+  # Provides Windows desktop control via Computer Use API
+  # Enable/disable via BYTEBOT_ENABLE_OMNIBOX=true/false
+  omnibox:
+    image: dockurr/windows:latest
+    container_name: bytebot-omnibox
+    privileged: true  # Required for KVM virtualization
+    restart: unless-stopped
+    ports:
+      - "8006:8006"  # Web viewer
+      - "3389:3389"  # RDP
+      - "5000:5000"  # Computer Use API
+      - "5900:5900"  # VNC
+    environment:
+      - VERSION=win11e
+      - RAM_SIZE=${OMNIBOX_RAM_SIZE:-8G}
+      - CPU_CORES=${OMNIBOX_CPU_CORES:-4}
+      - DISK_SIZE=${OMNIBOX_DISK_SIZE:-64G}
+    devices:
+      - /dev/kvm      # KVM virtualization
+      - /dev/net/tun  # Network tunneling
+    cap_add:
+      - NET_ADMIN  # Network administration
+    volumes:
+      # Windows ISO (optional - downloads if not present)
+      - ../packages/omnibox/iso:/storage/iso:ro
+      # OEM setup scripts
+      - ../packages/omnibox/oem:/storage/oem:ro
+      # Windows setup files
+      - ../packages/omnibox/setup:/storage/setup:ro
+      # Persistent VM storage
+      - omnibox_data:/storage
+    networks:
+      - bytebot-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 120s  # Windows VM takes time to boot
+    profiles:
+      - omnibox  # Only start when explicitly requested
+
+  # OmniBox Adapter - Windows Desktop Control Service
+  # Provides bytebotd-compatible API for OmniBox/Windows
+  omnibox-adapter:
+    build:
+      context: ..
+      dockerfile: packages/omnibox-adapter/Dockerfile
+    container_name: bytebot-omnibox-adapter
+    restart: unless-stopped
+    ports:
+      - "5001:5001"
+    environment:
+      - NODE_ENV=production
+      - PORT=5001
+      - OMNIBOX_URL=http://omnibox:5000
+      - OMNIBOX_TIMEOUT=${OMNIBOX_TIMEOUT:-30000}
+      - OMNIPARSER_URL=${OMNIPARSER_URL:-http://bytebot-omniparser:9989}
+      - OMNIPARSER_TIMEOUT=${OMNIPARSER_TIMEOUT:-30000}
+      - BYTEBOT_CV_USE_OMNIPARSER=${BYTEBOT_CV_USE_OMNIPARSER:-true}
+    depends_on:
+      omnibox:
+        condition: service_healthy
+      bytebot-omniparser:
+        condition: service_healthy
+    networks:
+      - bytebot-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5001/computer-use"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    profiles:
+      - omnibox  # Only start when explicitly requested
+
 networks:
   bytebot-network:
     driver: bridge
@@ -179,3 +256,4 @@ networks:
 volumes:
   postgres_data:
   omniparser_weights:
+  omnibox_data:
