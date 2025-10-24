@@ -2,6 +2,9 @@ name: bytebot
 
 services:
   bytebot-desktop:
+    env_file:
+      - .env.defaults
+      - .env
     # Build from source with OpenCV 4.8.0
     build:
       context: ..
@@ -48,6 +51,9 @@ services:
       - linux  # Only start when Linux desktop is selected
 
   postgres:
+    env_file:
+      - .env.defaults
+      - .env
     image: ${BYTEBOT_POSTGRES_IMAGE:-public.ecr.aws/docker/library/postgres:16-alpine}
     container_name: bytebot-postgres
     restart: unless-stopped
@@ -63,6 +69,9 @@ services:
       - postgres_data:/var/lib/postgresql/data
 
   bytebot-agent:
+    env_file:
+      - .env.defaults
+      - .env
     build:
       context: ..
       dockerfile: packages/bytebot-agent/Dockerfile
@@ -98,6 +107,9 @@ services:
       - bytebot-network
 
   bytebot-ui:
+    env_file:
+      - .env.defaults
+      - .env
     build:
       context: ..
       dockerfile: packages/bytebot-ui/Dockerfile
@@ -121,6 +133,9 @@ services:
       - bytebot-network
 
   bytebot-omniparser:
+    env_file:
+      - .env.defaults
+      - .env
     build:
       context: ../packages/bytebot-omniparser
       dockerfile: Dockerfile
@@ -157,6 +172,9 @@ services:
   # Provides Windows desktop control via Computer Use API
   # Enable/disable via BYTEBOT_ENABLE_OMNIBOX=true/false
   omnibox:
+    env_file:
+      - .env.defaults
+      - .env
     image: dockurr/windows:latest
     container_name: bytebot-omnibox
     privileged: true  # Required for KVM virtualization
@@ -200,6 +218,9 @@ services:
   # OmniBox Adapter - Windows Desktop Control Service
   # Provides bytebotd-compatible API for OmniBox/Windows
   omnibox-adapter:
+    env_file:
+      - .env.defaults
+      - .env
     build:
       context: ..
       dockerfile: packages/omnibox-adapter/Dockerfile

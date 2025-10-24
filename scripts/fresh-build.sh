@@ -108,34 +108,6 @@ if [ -f "docker/.env.defaults" ]; then
     fi
     echo -e "${GREEN}✓ Platform configuration saved to .env.defaults${NC}"
 fi
-
-# Sync platform settings from .env.defaults to .env (Docker Compose reads .env)
-if [ -f "docker/.env" ] && [ -f "docker/.env.defaults" ]; then
-    # Copy BYTEBOT_DESKTOP_PLATFORM
-    if grep -q "^BYTEBOT_DESKTOP_PLATFORM=" docker/.env.defaults; then
-        PLATFORM_VALUE=$(grep "^BYTEBOT_DESKTOP_PLATFORM=" docker/.env.defaults | cut -d= -f2-)
-        if grep -q "^BYTEBOT_DESKTOP_PLATFORM=" docker/.env; then
-            sed -i.bak "s|^BYTEBOT_DESKTOP_PLATFORM=.*|BYTEBOT_DESKTOP_PLATFORM=$PLATFORM_VALUE|" docker/.env
-            rm docker/.env.bak
-        else
-            echo "BYTEBOT_DESKTOP_PLATFORM=$PLATFORM_VALUE" >> docker/.env
-        fi
-    fi
-
-    # Copy desktop URLs
-    for VAR in BYTEBOT_DESKTOP_LINUX_URL BYTEBOT_DESKTOP_WINDOWS_URL; do
-        if grep -q "^${VAR}=" docker/.env.defaults; then
-            VALUE=$(grep "^${VAR}=" docker/.env.defaults | cut -d= -f2-)
-            if grep -q "^${VAR}=" docker/.env; then
-                sed -i.bak "s|^${VAR}=.*|${VAR}=$VALUE|" docker/.env
-                rm docker/.env.bak
-            else
-                echo "${VAR}=$VALUE" >> docker/.env
-            fi
-        fi
-    done
-    echo -e "${GREEN}✓ Platform settings synced to .env${NC}"
-fi
 echo ""
 
 # Clean problematic node_modules (OpenCV build artifacts)

@@ -57,33 +57,6 @@ if [ -f ".env.defaults" ]; then
     fi
 fi
 
-# Sync platform settings from .env.defaults to .env (Docker Compose reads .env)
-if [ -f ".env" ] && [ -f ".env.defaults" ]; then
-    # Copy BYTEBOT_DESKTOP_PLATFORM
-    if grep -q "^BYTEBOT_DESKTOP_PLATFORM=" .env.defaults; then
-        PLATFORM_VALUE=$(grep "^BYTEBOT_DESKTOP_PLATFORM=" .env.defaults | cut -d= -f2-)
-        if grep -q "^BYTEBOT_DESKTOP_PLATFORM=" .env; then
-            sed -i.bak "s|^BYTEBOT_DESKTOP_PLATFORM=.*|BYTEBOT_DESKTOP_PLATFORM=$PLATFORM_VALUE|" .env
-            rm .env.bak
-        else
-            echo "BYTEBOT_DESKTOP_PLATFORM=$PLATFORM_VALUE" >> .env
-        fi
-    fi
-
-    # Copy desktop URLs
-    for VAR in BYTEBOT_DESKTOP_LINUX_URL BYTEBOT_DESKTOP_WINDOWS_URL; do
-        if grep -q "^${VAR}=" .env.defaults; then
-            VALUE=$(grep "^${VAR}=" .env.defaults | cut -d= -f2-)
-            if grep -q "^${VAR}=" .env; then
-                sed -i.bak "s|^${VAR}=.*|${VAR}=$VALUE|" .env
-                rm .env.bak
-            else
-                echo "${VAR}=$VALUE" >> .env
-            fi
-        fi
-    done
-fi
-
 cd ..
 
 # Determine which compose file to use
@@ -198,18 +171,6 @@ if [[ "$ARCH" == "arm64" ]] && [[ "$OS" == "Darwin" ]]; then
             rm docker/.env.defaults.bak
         fi
 
-        # Copy OMNIPARSER settings from .env.defaults to .env (Docker Compose reads .env)
-        if [ -f "docker/.env" ]; then
-            echo -e "${BLUE}Syncing OmniParser settings to .env...${NC}"
-            # Update or add OMNIPARSER_URL in .env
-            if grep -q "^OMNIPARSER_URL=" docker/.env; then
-                sed -i.bak 's|^OMNIPARSER_URL=.*|OMNIPARSER_URL=http://host.docker.internal:9989|' docker/.env
-                rm docker/.env.bak
-            else
-                echo "OMNIPARSER_URL=http://host.docker.internal:9989" >> docker/.env
-            fi
-        fi
-
         # LMStudio Configuration (optional)
         echo ""
         echo -e "${BLUE}LMStudio Configuration:${NC}"
@@ -275,17 +236,6 @@ if [[ "$ARCH" == "arm64" ]] && [[ "$OS" == "Darwin" ]]; then
         if grep -q "OMNIPARSER_URL=http://bytebot-omniparser:9989" docker/.env.defaults 2>/dev/null; then
             sed -i.bak 's|OMNIPARSER_URL=http://bytebot-omniparser:9989|OMNIPARSER_URL=http://host.docker.internal:9989|' docker/.env.defaults
             rm docker/.env.defaults.bak
-        fi
-
-        # Copy OMNIPARSER settings from .env.defaults to .env (Docker Compose reads .env)
-        if [ -f "docker/.env" ]; then
-            # Update or add OMNIPARSER_URL in .env
-            if grep -q "^OMNIPARSER_URL=" docker/.env; then
-                sed -i.bak 's|^OMNIPARSER_URL=.*|OMNIPARSER_URL=http://host.docker.internal:9989|' docker/.env
-                rm docker/.env.bak
-            else
-                echo "OMNIPARSER_URL=http://host.docker.internal:9989" >> docker/.env
-            fi
         fi
 
         # LMStudio Configuration (optional)
