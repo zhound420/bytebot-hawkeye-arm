@@ -144,7 +144,16 @@ export class TasksController {
           } satisfies BytebotAgentModel;
         });
 
-        return models;
+        // Deduplicate models by name (keep first occurrence)
+        // This fixes duplicate LMStudio models where the same model ID appears multiple times
+        const uniqueModels = new Map<string, BytebotAgentModel>();
+        models.forEach((model) => {
+          if (!uniqueModels.has(model.name)) {
+            uniqueModels.set(model.name, model);
+          }
+        });
+
+        return Array.from(uniqueModels.values());
       } catch (error) {
         if (error instanceof HttpException) {
           throw error;
