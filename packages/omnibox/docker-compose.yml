@@ -38,12 +38,10 @@ services:
       - NET_ADMIN  # Network administration
 
     volumes:
-      # Windows ISO (download Windows 11 Enterprise Evaluation and place here)
-      - ./iso:/storage/iso:ro
-      # OEM setup scripts (first boot customization)
-      - ./oem:/storage/oem:ro
-      # Windows setup files
-      - ./setup:/storage/setup:ro
+      # OEM firstboot scripts (runs on first boot via Windows setup)
+      - ./vm/win11setup/firstboot:/oem
+      # Setup scripts (Python server, tools installation)
+      - ./vm/win11setup/setupscripts:/data
       # Persistent VM storage
       - omnibox-data:/storage
 

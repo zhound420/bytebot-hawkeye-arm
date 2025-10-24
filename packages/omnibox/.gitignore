@@ -16,3 +16,4 @@ volumes/
 
 # Setup marker file
 .setup_complete
+vm/win11storage/
