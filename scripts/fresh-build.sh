@@ -153,6 +153,39 @@ fi
 echo -e "${GREEN}✓ Cleaned node_modules${NC}"
 echo ""
 
+# Check for Windows ISO (if using Windows desktop platform)
+if [ "$DESKTOP_PLATFORM" = "windows" ] || grep -q "BYTEBOT_DESKTOP_PLATFORM=windows" docker/.env 2>/dev/null; then
+    ISO_PATH="$HOME/.cache/bytebot/iso/tiny11-2311.iso"
+    echo -e "${BLUE}Step 3b: Checking for cached Windows ISO...${NC}"
+
+    if [ -f "$ISO_PATH" ]; then
+        ISO_SIZE_MB=$(du -m "$ISO_PATH" | cut -f1)
+        echo -e "${GREEN}✓ Using cached Tiny11 ISO (${ISO_SIZE_MB}MB)${NC}"
+        echo -e "${BLUE}  Location: $ISO_PATH${NC}"
+    else
+        echo -e "${YELLOW}⚠ Tiny11 ISO not found in cache${NC}"
+        echo -e "${YELLOW}  Expected location: $ISO_PATH${NC}"
+        echo ""
+        read -p "Download Tiny11 ISO now? (~3GB, takes 5-15 min) [Y/n] " -n 1 -r
+        echo
+        if [[ ! $REPLY =~ ^[Nn]$ ]]; then
+            echo -e "${BLUE}Running download script...${NC}"
+            ./scripts/download-windows-iso.sh
+            if [ $? -eq 0 ]; then
+                echo -e "${GREEN}✓ ISO download complete${NC}"
+            else
+                echo -e "${RED}✗ ISO download failed${NC}"
+                echo "You can manually download later with: ./scripts/download-windows-iso.sh"
+                echo "Continuing without Windows desktop..."
+            fi
+        else
+            echo -e "${YELLOW}Skipping ISO download. Windows desktop will not be available.${NC}"
+            echo "Run later with: ./scripts/download-windows-iso.sh"
+        fi
+    fi
+    echo ""
+fi
+
 # Build shared package first (required dependency)
 echo -e "${BLUE}Step 4: Building shared package...${NC}"
 cd packages/shared
@@ -253,7 +286,7 @@ if [[ "$ARCH" == "arm64" ]] && [[ "$PLATFORM" == "macOS" ]]; then
     echo -e "${YELLOW}Note: Running via Rosetta 2 on Apple Silicon${NC}"
     echo -e "${BLUE}Building without OmniParser container (using native)...${NC}"
     # Build without OmniParser container (running natively with MPS)
-    docker compose $PROFILE_ARG -f $COMPOSE_FILE build \
+    docker compose $PROFILE_ARG -f $COMPOSE_FILE -f docker-compose.override.yml build \
         $([ "$DESKTOP_PLATFORM" = "windows" ] && echo "omnibox omnibox-adapter" || echo "bytebot-desktop") \
         bytebot-agent \
         bytebot-ui \
@@ -261,7 +294,7 @@ if [[ "$ARCH" == "arm64" ]] && [[ "$PLATFORM" == "macOS" ]]; then
 
     echo ""
     echo -e "${BLUE}Starting services...${NC}"
-    docker compose $PROFILE_ARG -f $COMPOSE_FILE up -d --no-deps \
+    docker compose $PROFILE_ARG -f $COMPOSE_FILE -f docker-compose.override.yml up -d --no-deps \
         $([ "$DESKTOP_PLATFORM" = "windows" ] && echo "omnibox omnibox-adapter" || echo "bytebot-desktop") \
         bytebot-agent \
         bytebot-ui \
@@ -270,7 +303,7 @@ if [[ "$ARCH" == "arm64" ]] && [[ "$PLATFORM" == "macOS" ]]; then
 else
     # Linux and Windows (WSL) - build everything including OmniParser
     echo -e "${BLUE}Building all services including OmniParser...${NC}"
-    docker compose $PROFILE_ARG -f $COMPOSE_FILE up -d --build
+    docker compose $PROFILE_ARG -f $COMPOSE_FILE -f docker-compose.override.yml up -d --build
 fi
 
 cd ..

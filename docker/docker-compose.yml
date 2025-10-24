@@ -167,7 +167,7 @@ services:
       - "5000:5000"  # Computer Use API
       - "5900:5900"  # VNC
     environment:
-      - VERSION=win11e
+      # VERSION removed - using custom Tiny11 ISO instead
       - RAM_SIZE=${OMNIBOX_RAM_SIZE:-8G}
       - CPU_CORES=${OMNIBOX_CPU_CORES:-4}
       - DISK_SIZE=${OMNIBOX_DISK_SIZE:-64G}
@@ -177,6 +177,8 @@ services:
     cap_add:
       - NET_ADMIN  # Network administration
     volumes:
+      # Cached Tiny11 ISO (downloaded via scripts/download-windows-iso.sh)
+      - ~/.cache/bytebot/iso/tiny11-2311.iso:/custom.iso:ro
       # OEM firstboot scripts (runs on first boot via Windows setup)
       - ../packages/omnibox/vm/win11setup/firstboot:/oem
       # Setup scripts (Python server, tools installation)

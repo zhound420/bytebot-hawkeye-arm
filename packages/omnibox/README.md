@@ -1,57 +1,53 @@
-# OmniBox - Windows 11 Desktop Agent Environment
+# OmniBox - Tiny11 Desktop Agent Environment
 
-OmniBox is a lightweight Windows 11 VM in Docker from Microsoft's OmniParser project, designed for AI agent testing and automation.
+OmniBox is a lightweight Tiny11 (Windows 11 minimal) VM in Docker from Microsoft's OmniParser project, designed for AI agent testing and automation.
 
 ## Features
 
-- **50% smaller** than traditional Windows VMs (30GB vs 60GB+)
+- **70% smaller** than traditional Windows VMs (20GB vs 60GB+)
 - **Computer Use API** on port 5000 for programmatic desktop control
 - **VNC Access** on port 5900 for visual debugging
 - **PyAutoGUI integration** for mouse/keyboard automation
-- **Pre-configured** Windows 11 Enterprise environment
+- **Pre-configured** Tiny11 environment (Windows 11 with bloat removed)
+- **Cached ISO** - Download once, reuse forever
 
 ## Prerequisites
 
 - Docker Desktop with KVM support (Linux/WSL2)
-- ~30GB free disk space
-- Windows 11 Enterprise Evaluation ISO
+- ~20GB free disk space
+- Tiny11 2311 ISO (automatically downloaded)
 
 ## Setup
 
-### 1. Get Windows 11 ISO
+### 1. Download Tiny11 ISO
 
-Download Windows 11 Enterprise Evaluation from Microsoft:
+Run the automated download script (downloads ~3GB):
 ```bash
-# Place the ISO in packages/omnibox/iso/custom.iso
-mkdir -p packages/omnibox/iso
-# Download from: https://www.microsoft.com/en-us/evalcenter/evaluate-windows-11-enterprise
-# Rename to custom.iso
+./scripts/download-windows-iso.sh
 ```
 
-### 2. Build OmniBox Image
+This downloads Tiny11 2311 from Internet Archive and caches it in `~/.cache/bytebot/iso/`. The ISO persists across Docker volume deletions, so you only download once.
 
+**Manual download** (if script fails):
 ```bash
-# Using Microsoft's pre-built image (recommended)
-docker pull dockurr/windows:latest
-
-# OR build from source
-cd packages/omnibox
-docker build -t omni-windows .
+mkdir -p ~/.cache/bytebot/iso
+# Download from: https://archive.org/download/tiny11-2311/tiny11%202311%20x64.iso
+# Save as: ~/.cache/bytebot/iso/tiny11-2311.iso
 ```
 
-### 3. Start OmniBox
+### 2. Start OmniBox
 
 ```bash
 # Using docker-compose (from project root)
-docker compose -f docker/docker-compose.yml up -d omnibox
+docker compose -f docker/docker-compose.proxy.yml --profile omnibox up -d omnibox
 
-# OR using the management script
-cd packages/omnibox
-./scripts/manage_vm.sh create
-./scripts/manage_vm.sh start
+# OR using fresh build script
+./scripts/fresh-build.sh
 ```
 
-### 4. Access Windows Desktop
+The container will boot from the cached Tiny11 ISO. First boot takes 20-30 minutes for automated setup (Python, PyAutoGUI, Computer Use server).
+
+### 3. Access Windows Desktop
 
 **VNC Viewer:** Connect to `localhost:5900`
 
@@ -136,8 +132,8 @@ See `packages/omnibox-adapter/README.md` for details.
 - Check Docker has privileges: `docker run --privileged`
 
 **Slow performance:**
-- Increase allocated RAM in compose.yml (default: 8G)
-- Use GPU passthrough if available
+- Increase allocated RAM: Set `OMNIBOX_RAM_SIZE=16G` in docker/.env
+- Allocate more CPU cores: Set `OMNIBOX_CPU_CORES=8`
 - Ensure SSD storage for VM disk
 
 **API not responding:**
