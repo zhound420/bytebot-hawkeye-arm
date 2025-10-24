@@ -212,6 +212,8 @@ export class EnhancedVisualDetectorService {
       // Update metadata with device info for UI display
       this.cvActivity.updateMethodMetadata(activityId, {
         device: response.device,
+        deviceName: response.device_name,
+        deviceType: response.device_type,
         elementCount: response.count,
         processingTime: response.processing_time_ms,
       });

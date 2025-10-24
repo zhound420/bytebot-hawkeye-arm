@@ -52,7 +52,13 @@ class OmniParserV2:
         self.device = settings.device
         self.dtype = self._get_dtype()
 
+        # Get detailed device information for UI display
+        self.device_name = self._get_device_name()
+        self.device_type = self._get_device_type()
+
         print(f"Loading OmniParser models on {self.device} with dtype={self.dtype}...")
+        if self.device_name != self.device:
+            print(f"  Device: {self.device_name}")
         if self.device == "mps":
             print("  ℹ️  MPS detected: Using float32 to avoid dtype mismatch issues")
 
@@ -77,6 +83,37 @@ class OmniParserV2:
             "bfloat16": torch.bfloat16,
         }
         return dtype_map.get(settings.model_dtype, torch.float16)
+
+    def _get_device_name(self) -> str:
+        """Get human-readable device name for UI display."""
+        import platform
+
+        if self.device == "cuda":
+            try:
+                if torch.cuda.is_available() and torch.cuda.device_count() > 0:
+                    return f"NVIDIA {torch.cuda.get_device_name(0)}"
+                return "CUDA (unknown GPU)"
+            except Exception:
+                return "CUDA"
+        elif self.device == "mps":
+            # Get Apple Silicon chip name if possible
+            try:
+                arch = platform.machine()
+                if "arm" in arch.lower() or "aarch64" in arch.lower():
+                    return f"Apple Silicon ({arch})"
+                return "MPS (Apple Silicon)"
+            except Exception:
+                return "MPS"
+        else:  # cpu
+            try:
+                arch = platform.machine()
+                return f"CPU ({arch})"
+            except Exception:
+                return "CPU"
+
+    def _get_device_type(self) -> str:
+        """Get device type category (gpu or cpu)."""
+        return "gpu" if self.device in ["cuda", "mps"] else "cpu"
 
     def _load_icon_detector(self) -> YOLO:
         """Load YOLOv8 icon detection model."""
@@ -481,6 +518,8 @@ class OmniParserV2:
                     "processing_time_ms": round(processing_time, 2),
                     "image_size": {"width": w, "height": h},
                     "device": self.device,
+                    "device_name": self.device_name,
+                    "device_type": self.device_type,
                     "ocr_detected": len(ocr_text) if include_ocr else 0,
                     "icon_detected": sum(1 for e in elements if e['type'] == 'icon'),
                     "text_detected": sum(1 for e in elements if e['type'] == 'text'),
@@ -557,7 +596,9 @@ class OmniParserV2:
             "count": len(detections),
             "processing_time_ms": round(processing_time, 2),
             "image_size": {"width": image.shape[1], "height": image.shape[0]},
-            "device": self.device
+            "device": self.device,
+            "device_name": self.device_name,
+            "device_type": self.device_type
         }
 
         if som_image:

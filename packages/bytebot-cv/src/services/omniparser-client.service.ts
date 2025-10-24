@@ -28,6 +28,8 @@ export interface OmniParserResponse {
     height: number;
   };
   device: string;
+  device_name?: string; // Human-readable device name (e.g., "NVIDIA RTX 4090", "CPU (x86_64)")
+  device_type?: string; // Device type category: "gpu" or "cpu"
   som_image?: string; // Base64 encoded Set-of-Mark annotated image
   ocr_detected?: number; // Number of OCR text elements detected
   icon_detected?: number; // Number of icon elements detected

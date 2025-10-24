@@ -20,6 +20,8 @@ interface CVActivitySnapshot {
     successRate: number;
   };
   omniparserDevice?: string;
+  omniparserDeviceName?: string;
+  omniparserDeviceType?: string;
   omniparserModels?: {
     iconDetector: string;
     captionModel: string;
@@ -78,7 +80,31 @@ const methodColors: Record<string, string> = {
 };
 
 // Helper function to get device badge and styling
-const getDeviceBadge = (device?: string): { icon: string; label: string; color: string } => {
+const getDeviceBadge = (
+  device?: string,
+  deviceName?: string,
+  deviceType?: string
+): { icon: string; label: string; color: string } => {
+  // Use deviceName if available for richer display
+  if (deviceName && deviceType) {
+    if (deviceType === "gpu") {
+      const isNvidia = deviceName.toLowerCase().includes("nvidia");
+      const isApple = deviceName.toLowerCase().includes("apple");
+      return {
+        icon: isNvidia ? "⚡" : isApple ? "🍎" : "🎮",
+        label: deviceName,
+        color: "text-green-500 dark:text-green-400",
+      };
+    } else {
+      return {
+        icon: "💻",
+        label: deviceName,
+        color: "text-blue-500 dark:text-blue-400",
+      };
+    }
+  }
+
+  // Fall back to old pattern matching on device string
   if (!device) return { icon: "💻", label: "Native", color: "text-blue-500" };
 
   const deviceLower = device.toLowerCase();
@@ -183,7 +209,11 @@ export function CVActivityIndicator({ className, compact = false, inline = false
   // Inline mode for chat panel
   if (inline) {
     const hasOmniParser = activity?.activeMethods?.includes("omniparser") || activity?.omniparserModels;
-    const deviceBadge = getDeviceBadge(activity?.omniparserDevice);
+    const deviceBadge = getDeviceBadge(
+      activity?.omniparserDevice,
+      activity?.omniparserDeviceName,
+      activity?.omniparserDeviceType
+    );
 
     return (
       <div className={cn("rounded-lg border border-border bg-card/50 dark:bg-card/30 px-3 py-2 backdrop-blur-sm", className)}>
@@ -323,7 +353,11 @@ export function CVActivityIndicator({ className, compact = false, inline = false
 
   if (compact) {
     const hasOmniParser = activity?.activeMethods?.includes("omniparser") || activity?.omniparserModels;
-    const deviceBadge = getDeviceBadge(activity?.omniparserDevice);
+    const deviceBadge = getDeviceBadge(
+      activity?.omniparserDevice,
+      activity?.omniparserDeviceName,
+      activity?.omniparserDeviceType
+    );
     const models = activity?.omniparserModels;
 
     return (
@@ -361,7 +395,11 @@ export function CVActivityIndicator({ className, compact = false, inline = false
     );
   }
 
-  const deviceBadge = getDeviceBadge(activity?.omniparserDevice);
+  const deviceBadge = getDeviceBadge(
+    activity?.omniparserDevice,
+    activity?.omniparserDeviceName,
+    activity?.omniparserDeviceType
+  );
   const hasOmniParser = activity?.activeMethods?.includes("omniparser") || activity?.omniparserDevice;
 
   return (

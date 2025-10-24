@@ -50,6 +50,8 @@ class ParseResponse(BaseModel):
     processing_time_ms: float
     image_size: dict[str, int]
     device: str
+    device_name: Optional[str] = Field(None, description="Human-readable device name (e.g., 'NVIDIA RTX 4090', 'CPU (x86_64)')")
+    device_type: Optional[str] = Field(None, description="Device type category: 'gpu' or 'cpu'")
     som_image: Optional[str] = Field(None, description="Base64 encoded Set-of-Mark annotated image")
     ocr_detected: Optional[int] = Field(None, description="Number of OCR text elements detected")
     icon_detected: Optional[int] = Field(None, description="Number of icon elements detected")

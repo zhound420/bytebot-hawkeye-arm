@@ -66,6 +66,8 @@ export interface CVActivitySnapshot {
     successRate: number;
   };
   omniparserDevice?: string; // Device type for OmniParser (cuda, mps, cpu)
+  omniparserDeviceName?: string; // Human-readable device name (e.g., "NVIDIA RTX 4090", "CPU (x86_64)")
+  omniparserDeviceType?: string; // Device type category: "gpu" or "cpu"
   omniparserModels?: { // Models used by OmniParser
     iconDetector: string; // e.g., "YOLOv8"
     captionModel: string; // e.g., "Florence-2"
@@ -196,9 +198,13 @@ export class CVActivityIndicatorService extends EventEmitter {
 
     // Extract OmniParser device info from active methods or recent history
     let omniparserDevice: string | undefined;
+    let omniparserDeviceName: string | undefined;
+    let omniparserDeviceType: string | undefined;
     for (const activity of this.activeMethods.values()) {
       if (activity.method === 'omniparser' && activity.metadata?.device) {
         omniparserDevice = activity.metadata.device;
+        omniparserDeviceName = activity.metadata.deviceName;
+        omniparserDeviceType = activity.metadata.deviceType;
         break;
       }
     }
@@ -210,6 +216,8 @@ export class CVActivityIndicatorService extends EventEmitter {
         .find(h => h.method === 'omniparser' && h.metadata?.device);
       if (recentOmniparser) {
         omniparserDevice = recentOmniparser.metadata?.device;
+        omniparserDeviceName = recentOmniparser.metadata?.deviceName;
+        omniparserDeviceType = recentOmniparser.metadata?.deviceType;
       }
     }
 
@@ -232,6 +240,8 @@ export class CVActivityIndicatorService extends EventEmitter {
         successRate
       },
       omniparserDevice,
+      omniparserDeviceName,
+      omniparserDeviceType,
       omniparserModels
     };
   }
