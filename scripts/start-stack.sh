@@ -104,6 +104,84 @@ else
     exit 1
 fi
 
+# Check for Windows ISO (if using Windows desktop platform)
+if [ "$DESKTOP_PLATFORM" = "windows" ]; then
+    echo ""
+    echo -e "${BLUE}Checking for Windows ISO...${NC}"
+
+    CACHE_DIR="$HOME/.cache/bytebot/iso"
+    VARIANT_FILE="$CACHE_DIR/.variant"
+    SYMLINK_PATH="$CACHE_DIR/windows.iso"
+
+    # Check if symlink exists
+    if [ -L "$SYMLINK_PATH" ] && [ -e "$SYMLINK_PATH" ]; then
+        # Get variant from metadata
+        if [ -f "$VARIANT_FILE" ]; then
+            VARIANT=$(cat "$VARIANT_FILE")
+            case "$VARIANT" in
+                standard)
+                    VARIANT_NAME="Tiny11 2311 (Standard)"
+                    ;;
+                core)
+                    VARIANT_NAME="Tiny11 Core x64"
+                    ;;
+                *)
+                    VARIANT_NAME="Unknown"
+                    ;;
+            esac
+        else
+            VARIANT_NAME="Unknown variant"
+        fi
+
+        ISO_SIZE_MB=$(du -m "$SYMLINK_PATH" 2>/dev/null | cut -f1)
+        echo -e "${GREEN}✓ Using cached Windows ISO: ${VARIANT_NAME} (${ISO_SIZE_MB}MB)${NC}"
+        echo -e "${BLUE}  Location: $SYMLINK_PATH${NC}"
+    else
+        echo -e "${YELLOW}⚠️  No Windows ISO found in cache${NC}"
+        echo -e "${YELLOW}  Expected location: $SYMLINK_PATH${NC}"
+        echo ""
+        echo "Windows desktop requires a Tiny11 ISO (~3GB)."
+        echo ""
+        read -p "Download Windows ISO now? [Y/n]: " -n 1 -r
+        echo
+        if [[ ! $REPLY =~ ^[Nn]$ ]]; then
+            echo -e "${BLUE}Running download script...${NC}"
+            echo ""
+            ./scripts/download-windows-iso.sh
+            if [ $? -ne 0 ]; then
+                echo ""
+                echo -e "${RED}✗ ISO download failed${NC}"
+                echo "You can manually download later with: ./scripts/download-windows-iso.sh"
+                echo ""
+                read -p "Continue without Windows desktop? [y/N]: " -n 1 -r
+                echo
+                if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+                    echo -e "${YELLOW}Exiting. Run this script again after downloading the ISO.${NC}"
+                    exit 1
+                fi
+                echo -e "${YELLOW}Continuing without Windows desktop...${NC}"
+                DESKTOP_PLATFORM="linux"
+            else
+                echo ""
+                echo -e "${GREEN}✓ ISO download complete${NC}"
+            fi
+        else
+            echo -e "${YELLOW}Skipping ISO download.${NC}"
+            echo ""
+            read -p "Continue without Windows desktop? [y/N]: " -n 1 -r
+            echo
+            if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+                echo -e "${YELLOW}Exiting. Run this script again after downloading the ISO.${NC}"
+                exit 1
+            fi
+            echo -e "${YELLOW}Switching to Linux desktop...${NC}"
+            DESKTOP_PLATFORM="linux"
+        fi
+    fi
+fi
+
+echo ""
+
 # Platform-specific configuration
 if [[ "$ARCH" == "arm64" ]] && [[ "$OS" == "Darwin" ]]; then
     echo -e "${BLUE}Platform: Apple Silicon${NC}"
@@ -159,7 +237,7 @@ if [[ "$ARCH" == "arm64" ]] && [[ "$OS" == "Darwin" ]]; then
         # Start all services except OmniParser container
         # --no-deps prevents starting dependent services (bytebot-omniparser)
         # Add --build flag to rebuild if code changed
-        docker compose $PROFILE_ARG -f $COMPOSE_FILE up -d --build --no-deps \
+        docker compose $PROFILE_ARG -f $COMPOSE_FILE -f docker-compose.override.yml up -d --build --no-deps \
             $([ "$DESKTOP_PLATFORM" = "windows" ] && echo "omnibox omnibox-adapter" || echo "bytebot-desktop") \
             bytebot-agent \
             bytebot-ui \
@@ -237,7 +315,7 @@ if [[ "$ARCH" == "arm64" ]] && [[ "$OS" == "Darwin" ]]; then
 
         # --no-deps prevents starting dependent services (bytebot-omniparser)
         # Add --build flag to rebuild if code changed
-        docker compose $PROFILE_ARG -f $COMPOSE_FILE up -d --build --no-deps \
+        docker compose $PROFILE_ARG -f $COMPOSE_FILE -f docker-compose.override.yml up -d --build --no-deps \
             $([ "$DESKTOP_PLATFORM" = "windows" ] && echo "omnibox omnibox-adapter" || echo "bytebot-desktop") \
             bytebot-agent \
             bytebot-ui \
@@ -301,7 +379,7 @@ elif [[ "$ARCH" == "x86_64" ]] || [[ "$ARCH" == "amd64" ]]; then
         echo -e "${BLUE}Including Linux desktop (bytebotd) services...${NC}"
     fi
 
-    docker compose $PROFILE_ARG -f $COMPOSE_FILE up -d --build
+    docker compose $PROFILE_ARG -f $COMPOSE_FILE -f docker-compose.override.yml up -d --build
 fi
 
 # Wait for services to be ready
