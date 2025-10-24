@@ -1,5 +1,5 @@
 # =============================================================================
-# ByteBot Agent Dockerfile - Streamlined without OpenCV
+# ByteBot Agent Dockerfile - Workspace-based build
 # =============================================================================
 
 FROM node:20.19.5-slim AS base
@@ -29,53 +29,43 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app
 
-# Copy package files for dependency resolution
-COPY package.json ./
+# Copy workspace configuration and all packages
+COPY package.json package-lock.json* ./
 COPY ./packages ./packages
-COPY ./config/universal-coordinates.yaml ./config/universal-coordinates.yaml
+COPY ./config ./config
 
 # Set environment variables
 ENV NODE_ENV=production \
-    NPM_CONFIG_LOGLEVEL=warn \
-    NPM_CONFIG_IGNORE_ENGINES=true
+    NPM_CONFIG_LOGLEVEL=warn
 
-# Install shared dependencies first
+# Install ALL workspace dependencies at once (proper monorepo install)
+RUN echo "=== Installing workspace dependencies ===" && \
+    npm install && \
+    echo "✓ Workspace dependencies installed successfully"
+
+# Build shared package first
 WORKDIR /app/packages/shared
-RUN echo "=== Installing shared dependencies ===" && \
-    npm install --omit=dev --no-audit --no-fund
-
-# Build shared package
 RUN echo "=== Building shared package ===" && \
-    npm run build
+    npm run build && \
+    echo "✓ shared package built"
 
-# Install bytebot-cv dependencies (no OpenCV)
+# Build bytebot-cv package
 WORKDIR /app/packages/bytebot-cv
-RUN echo "=== Installing bytebot-cv dependencies ===" && \
-    npm install --include=dev --no-audit --no-fund && \
-    echo "=== Building bytebot-cv ===" && \
+RUN echo "=== Building bytebot-cv package ===" && \
     npm run build && \
     echo "✓ bytebot-cv built successfully (OmniParser + Tesseract.js only)"
 
-# Install and build bytebot-agent
+# Build bytebot-agent
 WORKDIR /app/packages/bytebot-agent
-RUN echo "=== Installing bytebot-agent dependencies ===" && \
-    npm install --include=dev --no-audit --no-fund --ignore-engines --ignore-scripts && \
-    echo "✓ bytebot-agent dependencies installed successfully"
-
-# Generate Prisma client
 RUN echo "=== Generating Prisma client ===" && \
-    npx prisma generate
+    npx prisma generate && \
+    echo "✓ Prisma client generated"
 
-# Build the application
 RUN echo "=== Building bytebot-agent application ===" && \
-    npm run build:dist
+    npm run build:dist && \
+    echo "✓ bytebot-agent built successfully"
 
-RUN echo "=== Build completed successfully ===" && \
-    echo "Node version: $(node --version)" && \
-    echo "CV detection: OmniParser + Tesseract.js" && \
-    echo "Prisma client generated successfully"
-
-# Add health check (simplified, no OpenCV)
+# Add health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
     CMD node -e "console.log('Health check: Node.js OK'); process.exit(0);"
 

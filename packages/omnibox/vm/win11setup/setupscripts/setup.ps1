@@ -383,10 +383,11 @@ $onLogonScriptPath = "$scriptFolder\on-logon.ps1"
 # Check if the scheduled task exists before unregistering it
 if (Get-ScheduledTask -TaskName $onLogonTaskName -ErrorAction SilentlyContinue) {
     Write-Host "Scheduled task $onLogonTaskName already exists."
-} else {
-    Write-Host "Registering new task $onLogonTaskName..."
-    Register-LogonTask -TaskName $onLogonTaskName -ScriptPath $onLogonScriptPath -LocalUser "Docker"
+    Unregister-ScheduledTask -TaskName $onLogonTaskName -Confirm:$false
 }
 
-Start-Sleep -Seconds 10
+Write-Host "Registering new startup task $onLogonTaskName (runs at Windows boot)..."
+Register-LogonTask -TaskName $onLogonTaskName -ScriptPath $onLogonScriptPath -AtStartup -LocalUser "Docker"
+
+Write-Host "Starting task immediately for first-time setup..."
 Start-ScheduledTask -TaskName $onLogonTaskName

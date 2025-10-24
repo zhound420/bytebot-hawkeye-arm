@@ -41,6 +41,10 @@ COPY pyproject.toml .
 # Clone OmniParser repository
 RUN git clone https://github.com/microsoft/OmniParser.git
 
+# Apply PaddleOCR 3.x compatibility patch
+RUN chmod +x scripts/patch-paddleocr.sh && \
+    bash scripts/patch-paddleocr.sh
+
 # Create weights directory
 RUN mkdir -p weights
 

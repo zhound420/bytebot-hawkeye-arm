@@ -117,7 +117,7 @@ function Register-LogonTask {
         [parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "Path to the .py script")]
         [string]
         $ScriptPath,
-        
+
         [parameter(Mandatory = $false, ValueFromPipelineByPropertyName = $true, HelpMessage = "Arguments to the .py script")]
         [string]
         $Arguments = "",
@@ -134,16 +134,20 @@ function Register-LogonTask {
         [switch]
         $AsSystem = $false,
 
+        [parameter(Mandatory = $false, ValueFromPipelineByPropertyName = $true, HelpMessage = "Run at startup instead of logon")]
+        [switch]
+        $AtStartup = $false,
+
         [parameter(Mandatory = $false, ValueFromPipelineByPropertyName = $true, HelpMessage = "logging file")]
         [string]
         $LogFilePath
     )
-    
+
     $scriptDirectory = Split-Path $ScriptPath
-    
-    $taskActionArgument = "-ExecutionPolicy Bypass -windowstyle hidden -Command `"try { . '$ScriptPath' $Arguments } catch { Write `$_.Exception.Message | Out-File $($TaskName)_Log.txt } finally { } `""    
+
+    $taskActionArgument = "-ExecutionPolicy Bypass -windowstyle hidden -Command `"try { . '$ScriptPath' $Arguments } catch { Write `$_.Exception.Message | Out-File $($TaskName)_Log.txt } finally { } `""
     $taskAction = New-ScheduledTaskAction -Execute "$PSHome\powershell.exe" -Argument $taskActionArgument -WorkingDirectory $scriptDirectory
-    
+
     $params = @{
         Force    = $True
         Action   = $taskAction
@@ -151,7 +155,11 @@ function Register-LogonTask {
         TaskName = $TaskName
     }
 
-    $taskTrigger = New-ScheduledTaskTrigger -AtLogOn
+    if ($AtStartup) {
+        $taskTrigger = New-ScheduledTaskTrigger -AtStartup
+    } else {
+        $taskTrigger = New-ScheduledTaskTrigger -AtLogOn
+    }
     $params.Add("Trigger", $taskTrigger)
 
     if ($AsSystem) {
