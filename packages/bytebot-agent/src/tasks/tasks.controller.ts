@@ -128,8 +128,8 @@ export class TasksController {
             vlmPatterns.test(modelName) ||
             vlmPatterns.test(modelId);
 
-          // Detect reasoning models (o1/o3/gpt-5/deepseek-r1 series)
-          const reasoningPatterns = /\bo1\b|\bo3\b|gpt-5|deepseek.*r1|\br1\b|reasoning|thinking/i;
+          // Detect reasoning models (o1/o3/gpt-5/deepseek/qwen/gemini reasoning variants)
+          const reasoningPatterns = /\bo1\b|\bo3\b|gpt-5|deepseek.*r1|\br1\b|reasoning|thinking|terminus/i;
           const supportsReasoning =
             reasoningPatterns.test(modelName) ||
             reasoningPatterns.test(modelId);
