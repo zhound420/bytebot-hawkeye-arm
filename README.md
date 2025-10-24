@@ -2,15 +2,15 @@
 
 <img src="docs/images/bytebot-logo.png" width="500" alt="Bytebot Logo">
 
-# Bytebot: Open-Source AI Desktop Agent
+# Bytebot Hawkeye: Precision AI Desktop Agent
 
-**An AI that has its own computer to complete tasks for you**
+**An AI desktop agent with enhanced targeting, GPU-accelerated computer vision, and 89% click accuracy**
 
 [![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/bytebot?referralCode=L9lKXQ)
 </div>
 
 <details>
-<summary><strong>Resources &amp; Translations</strong></summary>
+<summary><strong>Resources & Translations</strong></summary>
 
 <div align="center">
 
@@ -37,6 +37,19 @@
 
 ---
 
+## ⭐ What's New
+
+**Latest Hawkeye enhancements (January 2025):**
+
+- **61 AI Models** - Comprehensive catalog across all major providers (up from 45)
+- **15 Reasoning Models** - GPT-5 series, DeepSeek R1, o1/o3, Qwen thinking variants with amber UI badges
+- **Enhanced GPU Detection** - Real-time device reporting with visual indicators (⚡ NVIDIA GPU, 🍎 Apple Silicon, 💻 CPU)
+- **Full OmniParser v2.0** - 100% integration complete with OCR, interactivity detection, batch captioning, overlap filtering
+- **89% Click Accuracy** - Up from 72% with semantic UI understanding (YOLOv8 + Florence-2)
+- **Real-Time CV Monitoring** - Live model display and performance metrics with 500ms polling
+
+---
+
 ## 📋 Prerequisites
 
 ### Required Software
@@ -51,56 +64,41 @@ At least one LLM provider API key:
 - **Google** (Gemini models) - Get at [aistudio.google.com](https://aistudio.google.com)
 - **OpenRouter** (Multi-model proxy) - Get at [openrouter.ai](https://openrouter.ai)
 
-### GPU Requirements (Recommended for Best OmniParser Performance)
+### GPU Requirements (Optional, Recommended for Best Performance)
 
 OmniParser v2.0 provides semantic UI detection with GPU acceleration:
 
-#### **x86_64 Linux/Windows (NVIDIA GPU)**
-**Best performance: ~0.6s/frame with CUDA**
+| Platform | Performance | Setup |
+|----------|-------------|-------|
+| **x86_64 + NVIDIA GPU** | ⚡ ~0.6s/frame (CUDA) | Install `nvidia-container-toolkit` |
+| **Apple Silicon (M1-M4)** | 🍎 ~1-2s/frame (MPS) | Automatic native execution |
+| **CPU-only** | 💻 ~8-15s/frame | No setup needed, slower |
 
-Install `nvidia-container-toolkit` to enable GPU in Docker:
-
+**NVIDIA GPU Setup (Ubuntu/Debian):**
 ```bash
-# Ubuntu/Debian
 sudo apt-get update
 sudo apt-get install -y nvidia-container-toolkit
 sudo systemctl restart docker
-
-# Verify GPU access works
 docker run --rm --gpus all nvidia/cuda:11.8.0-base-ubuntu22.04 nvidia-smi
 ```
 
-**Without GPU:** Falls back to CPU (~8-15s/frame) - works but significantly slower.
-
-#### **Apple Silicon (M1-M4)**
-**Best performance: ~1-2s/frame with MPS**
-
-No additional installation needed - `setup-omniparser.sh` automatically configures native execution with Metal GPU acceleration.
-
-> **Note:** Docker Desktop on macOS doesn't pass through GPU access, so OmniParser runs natively outside Docker for best performance.
-
-#### **x86_64 CPU-only**
-Works without GPU but slower (~8-15s/frame). No additional setup needed.
-
 ---
 
-## 🚀 Quick Start (Platform-Optimized)
-
-**Three-step setup that automatically detects your platform and optimizes for best performance:**
+## 🚀 Quick Start
 
 ### Step 1: Clone Repository
 ```bash
-git clone https://github.com/zhound420/bytebot-hawkeye-cv.git
-cd bytebot-hawkeye-cv
+git clone https://github.com/zhound420/bytebot-hawkeye-op.git
+cd bytebot-hawkeye-op
 ```
 
 ### Step 2: Configure API Keys
 
-Create `docker/.env` with your API keys (**API keys only**, system config goes in `.env.defaults`):
+Create `docker/.env` with your API keys:
 
 ```bash
 cat <<'EOF' > docker/.env
-# LLM Provider API Keys (Required)
+# LLM Provider API Keys (Required - at least one)
 ANTHROPIC_API_KEY=sk-ant-...
 OPENAI_API_KEY=sk-...
 GEMINI_API_KEY=...
@@ -108,19 +106,18 @@ OPENROUTER_API_KEY=sk-or-v1-...
 EOF
 ```
 
-### Step 3: Setup OmniParser (Platform-Specific)
+### Step 3: Setup OmniParser
 
-The setup script automatically detects your hardware and installs the optimal configuration:
+The setup script auto-detects your hardware and installs the optimal configuration:
 
 ```bash
 ./scripts/setup-omniparser.sh
 ```
 
-**What happens automatically:**
-
-- **Apple Silicon (M1-M4):** Native OmniParser with MPS GPU (~1-2s/frame) - Best performance
-- **x86_64 + NVIDIA GPU:** Docker container with CUDA (~0.6s/frame) - Production-ready
-- **x86_64 CPU-only:** Docker container with CPU (~8-15s/frame) - Works everywhere
+**What happens:**
+- **Apple Silicon:** Native OmniParser with MPS GPU (~1-2s/frame)
+- **x86_64 + NVIDIA:** Docker with CUDA (~0.6s/frame)
+- **x86_64 CPU:** Docker with CPU fallback (~8-15s/frame)
 
 ### Step 4: Start the Stack
 
@@ -128,194 +125,183 @@ The setup script automatically detects your hardware and installs the optimal co
 ./scripts/start-stack.sh
 ```
 
-The start script will:
-- ✅ Detect your platform and configure OmniParser connectivity
-- ✅ Start native OmniParser (Apple Silicon) or Docker container (x86_64)
-- ✅ Launch all services: agent, UI, desktop, postgres, LLM proxy
-- ✅ Apply database migrations automatically
-- ✅ Verify all services are healthy
-
-**Access the Stack:**
-- 🌐 Web UI: http://localhost:9992
-- 🖥️ Desktop (noVNC): http://localhost:9990
-- 🤖 Agent API: http://localhost:9991
-- 🔀 LiteLLM Proxy: http://localhost:4000
-- 👁️ OmniParser: http://localhost:9989
+**Access the application:**
+- 🌐 **Web UI:** http://localhost:9992
+- 🖥️ **Desktop (noVNC):** http://localhost:9990
+- 🤖 **Agent API:** http://localhost:9991
+- 🔀 **LiteLLM Proxy:** http://localhost:4000
+- 👁️ **OmniParser:** http://localhost:9989
 
 **Stop the stack:**
 ```bash
 ./scripts/stop-stack.sh
 ```
 
-> **GPU not detected?** See [GPU Setup Guide](docs/GPU_SETUP.md) for troubleshooting and explicit GPU configuration.
+---
+
+## 📊 Models Available
+
+**61 models across all major providers** with comprehensive reasoning and vision support:
+
+### By Provider
+- **Anthropic (9):** Opus 4.1, Sonnet 4.5, Haiku 4.5, Sonnet 3.7, Opus 3.5, Haiku 3.5
+- **OpenAI (14):** GPT-5 variants, GPT-4.5, GPT-4o, GPT-4.1, o1/o3 series, GPT-4o-mini
+- **Qwen3-VL (7):** 235B thinking, 30B instruct/thinking, 8B instruct/thinking
+- **Gemini (12):** 2.5 Pro Exp, 2.0 Flash exp/thinking, 1.5 Pro/Flash, Exp 1206
+- **DeepSeek (8):** R1, R1-free, Chat v3, v3.1 Terminus, v3.2 Exp, Chat variants
+- **Llama (6):** 4 Scout, 3.3 70B, 3.2 Vision 90B/11B, free tier variants
+- **LMStudio (5):** Custom local model support
+
+### By Capability
+- **🧠 15 Reasoning Models** (amber badge in UI):
+  - OpenAI: o1, o1-mini, o3, o3-mini, GPT-5, GPT-5-mini, GPT-5-nano
+  - DeepSeek: R1, R1-free
+  - Qwen: 235B-thinking, 30B-thinking, 8B-thinking
+  - Gemini: 2.0 Flash thinking variants
+- **👁️ 61 Vision Models** - All models support visual input for screenshot analysis
+
+**Configuration:** Models are defined in `packages/bytebot-llm-proxy/litellm-config.yaml`
+
+---
 
 ## Hawkeye Fork Enhancements
 
-Hawkeye layers precision tooling on top of upstream Bytebot so the agent can land clicks with far greater reliability:
+Hawkeye layers precision tooling on top of upstream Bytebot for reliable autonomous operation:
 
 | Capability | Hawkeye | Upstream Bytebot |
 | --- | --- | --- |
-| **Grid overlay guidance** | Always-on 100 px grid with labeled axes and optional debug overlays toggled via `BYTEBOT_GRID_OVERLAY`/`BYTEBOT_GRID_DEBUG`, plus a live preview in the [overlay capture](docs/images/hawkeye-desktop.png). | No persistent spatial scaffolding; relies on raw screenshots. |
-| **Smart Focus targeting** | Three-stage coarse→focus→click workflow with tunable grids and prompts described in [Smart Focus System](docs/SMART_FOCUS_SYSTEM.md). | Single-shot click reasoning without structured zoom or guardrails. |
-| **Progressive zoom capture** | Deterministic zoom ladder with cyan micro-grids that map local→global coordinates; see [zoom samples](test-zoom-with-grid.png). | Manual zoom commands with no coordinate reconciliation. |
-| **Coordinate telemetry & accuracy** | Telemetry pipeline with `BYTEBOT_COORDINATE_METRICS` and `BYTEBOT_COORDINATE_DEBUG`, an attempt towards accuracy.(COORDINATE_ACCURACY_IMPROVEMENTS.md). | No automated accuracy measurement or debug dataset. |
-| **Universal coordinate mapping** | Shared lookup in `config/universal-coordinates.yaml` bundled in repo and `@bytebot/shared`, auto-discovered without extra configuration. | Requires custom configuration for consistent coordinate frames. |
-| **Universal element detection** | CV pipeline merges visual heuristics, OCR enrichments, and semantic roles to emit consistent `UniversalUIElement` metadata for buttons, inputs, and clickable controls. | LLM prompts must infer UI semantics from raw OCR spans and manually chosen click targets. |
-| **OmniParser v2.0 semantic detection** | AI-powered semantic UI detection using YOLOv8 icon detection + Florence-2 captioning with GPU acceleration (NVIDIA/Apple Silicon). Includes semantic mapping learning and training data collection for continuous improvement. | No semantic understanding of UI elements; relies on pixel-based analysis only. |
-| **Streamlined CV pipeline** | Two-method detection: OmniParser v2.0 (primary, 89% accuracy) + Tesseract.js OCR (fallback). OpenCV removed for simpler builds. | Basic screenshot analysis without advanced computer vision techniques. |
-| **Real-time CV activity monitoring** | Live tracking of active CV methods with animated indicators, OmniParser model display (YOLOv8 + Florence-2), GPU detection (NVIDIA GPU/Apple Silicon/CPU), performance metrics, success rates, and dedicated UI panels on Desktop and Task pages with 500ms polling. | No visibility into which detection methods are active or their performance characteristics. |
-| **Accessible UI theming** | Header theme toggle powered by Next.js theme switching delivers high-contrast light/dark palettes so operators can pick the most legible view. | Single default theme without in-app toggles. |
-| **Active Model desktop telemetry** | The desktop dashboard's Active Model card (under `/desktop`) continuously surfaces the agent's current provider, model alias, and streaming heartbeat so you can spot token stalls before they derail long-running sessions. | No dedicated real-time status card—operators must tail logs to confirm the active model. |
+| **Grid overlay guidance** | Always-on coordinate grids with labeled axes, optional debug overlays (`BYTEBOT_GRID_OVERLAY`/`BYTEBOT_GRID_DEBUG`) | No persistent spatial scaffolding |
+| **Smart Focus targeting** | Three-stage coarse→focus→click workflow with tunable grids ([Smart Focus System](docs/SMART_FOCUS_SYSTEM.md)) | Single-shot click reasoning |
+| **Progressive zoom capture** | Deterministic zoom ladder with cyan micro-grids and coordinate reconciliation | Manual zoom without coordinate mapping |
+| **Coordinate telemetry** | Real-time accuracy metrics with `BYTEBOT_COORDINATE_METRICS` and `BYTEBOT_COORDINATE_DEBUG` | No automated accuracy measurement |
+| **Universal coordinate mapping** | Shared lookup in `config/universal-coordinates.yaml` auto-discovered across packages | Requires custom configuration |
+| **OmniParser v2.0 semantic detection** | **100% integration:** YOLOv8 + Florence-2 + OCR + interactivity detection + batch captioning (**89% accuracy**) | Basic screenshot analysis |
+| **Streamlined CV pipeline** | Two-method detection (OmniParser primary + Tesseract.js OCR fallback), OpenCV removed | Pixel-based analysis only |
+| **Real-time CV monitoring** | Live tracking with animated indicators, GPU detection, model display (YOLOv8 + Florence-2), performance metrics | No CV visibility |
+| **GPU acceleration** | Auto-detected NVIDIA CUDA/Apple Silicon MPS with real-time device reporting (⚡/🍎/💻 badges) | No GPU support |
+| **Accessible UI theming** | Header theme toggle for high-contrast light/dark palettes | Single default theme |
+| **Active Model telemetry** | Desktop dashboard card shows current provider, model, streaming heartbeat | Must tail logs to confirm model |
 
-Flip individual systems off by setting the corresponding environment variables—`BYTEBOT_UNIVERSAL_TEACHING`, `BYTEBOT_ADAPTIVE_CALIBRATION`, `BYTEBOT_ZOOM_REFINEMENT`, or `BYTEBOT_COORDINATE_METRICS`—to `false` (default `true`). Enable deep-dive logs with `BYTEBOT_COORDINATE_DEBUG=true` when troubleshooting. Visit the `/desktop` route (see the screenshot above) to monitor the Active Model card while long-running tasks execute.
-
-### Smart Focus Targeting (Hawkeye Exclusive)
-
-The fork’s Smart Focus workflow narrows attention in three deliberate passes—coarse region selection, focused capture, and final click—so the agent can reason about targets instead of guessing. Enable or tune it with `BYTEBOT_SMART_FOCUS`, `BYTEBOT_OVERVIEW_GRID`, `BYTEBOT_REGION_GRID`, `BYTEBOT_FOCUSED_GRID`, and related knobs documented in [docs/SMART_FOCUS_SYSTEM.md](docs/SMART_FOCUS_SYSTEM.md).
+**Configuration:** Toggle features via environment variables (`BYTEBOT_SMART_FOCUS`, `BYTEBOT_UNIVERSAL_TEACHING`, `BYTEBOT_ADAPTIVE_CALIBRATION`, etc.)
 
 ![Desktop accuracy overlay](docs/images/hawkeye2.png)
 
-### Desktop Accuracy Drawer
+---
 
-The `/desktop` dashboard now ships with a Desktop Accuracy drawer that exposes the fork’s adaptive telemetry at a glance. The panel streams live stats for the currently selected session, lets operators jump between historical sessions with the session selector, and provides reset controls so you can zero out a learning run before capturing a new benchmark. Use the reset button to clear the in-memory metrics without restarting the daemon when you want a clean baseline for regression tests or demonstrations.
+## Smart Focus System
 
-![Desktop accuracy overlay](docs/images/hawkeye3.png)
+**Three-stage precision targeting** for reliable autonomous clicks:
 
-#### Learning Metrics Explained
+1. **Coarse** - Overview with large grid (`BYTEBOT_OVERVIEW_GRID=200px`)
+2. **Focus** - Zoom into target region with medium grid (`BYTEBOT_REGION_GRID=50px`)
+3. **Click** - Final selection with fine grid (`BYTEBOT_FOCUSED_GRID=25px`)
 
-To help you interpret the drawer’s live readouts, Hawkeye surfaces several learning metrics that highlight how the desktop agent is adapting:
-
-- **Attempt count** — The number of clicks evaluated during the active session. Use it to gauge how large the sample is before trusting the aggregate metrics.
-- **Success rate** — Percentage of attempts that landed within the configured smart click success radius. This reflects real-time precision as the agent iterates on a task.
-- **Weighted offsets** — Average X/Y drift in pixels, weighted by recency so the panel emphasizes the most recent behavior. Watch this to see whether recent tuning is nudging the cursor closer to targets.
-- **Convergence** — A decay-weighted score that trends toward 1.0 as the agent stops overshooting targets, signaling that the current calibration has stabilized.
-- **Hotspots** — Highlighted regions where misses cluster, helping you identify UI zones that need larger affordances, different prompts, or manual overrides.
-
-Together, these metrics give you continuous feedback on how Hawkeye’s coordinate calibration improves over time and whether additional guardrails are necessary for stubborn workflows.
-
-### Simplified Computer Vision Pipeline (OmniParser v2.0 + Tesseract.js)
-
-Hawkeye uses a **streamlined computer vision pipeline** focused on semantic understanding and reliability:
-
-#### **Two-Method Detection (OpenCV Removed)**
-- **OmniParser v2.0** (PRIMARY) - Semantic UI detection using YOLOv8 icon detection + Florence-2 captioning for functional element understanding
-- **Tesseract.js OCR** (FALLBACK) - Pure JavaScript text extraction for text-based elements
-
-**What changed:** OpenCV-based methods (template matching, feature detection, contour analysis) have been removed to reduce build complexity and improve maintainability. OmniParser provides superior semantic understanding with 89% click accuracy.
-
-#### **OmniParser v2.0 Semantic Detection**
-Hawkeye now includes **OmniParser v2.0** as the primary detection method, providing AI-powered semantic understanding of UI elements:
-
-- **YOLOv8 Icon Detection** (~50MB model) - Fine-tuned for UI elements with high-confidence bounding boxes
-- **Florence-2 Captioning** (~800MB model) - Generates functional descriptions like "search button" or "settings menu"
-- **Semantic Mapping Learning** - Automatically learns element mappings from successful interactions, improving accuracy over time
-- **Training Data Collection** - Captures caption training data for model improvement and fine-tuning
-- **GPU Acceleration** - Supports NVIDIA CUDA, Apple Silicon (MPS), and CPU fallback
-- **Performance** - ~0.6s/frame on NVIDIA GPU, ~1-2s on Apple Silicon, ~8-15s on CPU
-- **Benchmark** - 39.6% accuracy on ScreenSpot Pro benchmark
-
-**Platform Support:**
-- 🍎 **Apple Silicon (M1-M4):** Native execution with MPS GPU acceleration (~1-2s/frame)
-- ⚡ **x86_64 + NVIDIA GPU:** Docker with CUDA support (~0.6s/frame)
-- 💻 **CPU-only:** Docker with CPU fallback (~8-15s/frame)
-
-#### **Simplified Detection Orchestration**
-The `EnhancedVisualDetectorService` uses OmniParser as the primary method with Tesseract.js OCR as fallback:
-```typescript
-// Detection using OmniParser + OCR
-const result = await enhancedDetector.detectElements(screenshotBuffer, null, {
-  useOmniParser: true,         // Primary: Semantic UI detection (YOLOv8 + Florence-2)
-  useOCR: false,               // Fallback: Tesseract.js text extraction (expensive)
-  combineResults: true         // Merge overlapping detections
-});
-```
-
-**Detection Priority:**
-1. **OmniParser** (PRIMARY) - Semantic UI detection with YOLOv8 + Florence-2
-2. **Tesseract.js OCR** (FALLBACK) - Text extraction when OmniParser unavailable or disabled
-
-#### **Real-Time CV Activity Monitoring**
-Hawkeye provides comprehensive visibility into computer vision operations with live UI indicators:
-
-- **Live Method Tracking** - `CVActivityIndicatorService` tracks which CV methods are actively processing with animated indicators
-- **OmniParser Model Display** - Real-time display of active models (YOLOv8 + Florence-2) with GPU detection (NVIDIA GPU, Apple Silicon, or CPU)
-- **Performance Metrics** - Real-time success rates, processing times, average execution times, and total executions
-- **GPU Acceleration Status** - Live hardware detection showing compute device: ⚡ NVIDIA GPU, 🍎 Apple Silicon, or 💻 CPU
-- **UI Integration** - Dedicated CV Activity panels on both Desktop and Task pages with 500ms polling for real-time updates
-- **Debug Telemetry** - Comprehensive method execution history for optimization and troubleshooting
-
-**CV Activity Panel Features:**
-- Active method indicators with color-coded badges (OmniParser: Pink, OCR: Yellow)
-- Live execution timers showing how long each method has been processing
-- Performance grid: Avg Time, Total Executions, Success Rate, Compute Device
-- Automatic visibility when CV methods are active or have recent execution history
-
-#### **API Endpoints for CV Visibility**
+**Configuration:**
 ```bash
-GET /cv-activity/stream      # Real-time activity snapshot with OmniParser model info (polled every 500ms by UI)
-GET /cv-activity/status      # Current active methods snapshot
-GET /cv-activity/active      # Quick active/inactive check
-GET /cv-activity/performance # Method performance statistics
-GET /cv-activity/history     # Method execution history (last 20 executions)
+BYTEBOT_SMART_FOCUS=true                    # Enable Smart Focus
+BYTEBOT_SMART_FOCUS_MODEL=gpt-4o-mini      # Model for focus reasoning
+BYTEBOT_OVERVIEW_GRID=200                   # Coarse grid (px)
+BYTEBOT_REGION_GRID=50                      # Region grid (px)
+BYTEBOT_FOCUSED_GRID=25                     # Fine grid (px)
 ```
 
-**Response includes:**
-- Active methods array with execution timers
-- OmniParser device type (cuda, mps, cpu)
-- OmniParser models (icon_detector: "YOLOv8", caption_model: "Florence-2")
-- Performance metrics (avg processing time, total executions, success rate)
+**Documentation:** See [docs/SMART_FOCUS_SYSTEM.md](docs/SMART_FOCUS_SYSTEM.md) for full details.
 
-#### **Universal Element Detection Pipeline**
-The streamlined system outputs structured `UniversalUIElement` objects by fusing:
+---
 
-- **OmniParser v2.0 semantic detection** (PRIMARY) - YOLOv8 + Florence-2 for functional understanding with semantic mapping learning
-- **Tesseract.js OCR** (FALLBACK) - Pure JavaScript text extraction
-- **Semantic analysis** (`TextSemanticAnalyzerService`) for intent-based reasoning over raw UI text with functional term weighting
+## Computer Vision Pipeline
 
-**Semantic Mapping Learning:**
-- Automatically learns element mappings from successful interactions
-- 2x functional term weighting for better semantic matching
-- Screenshot caching with 2-second TTL for performance
-- Training data collection for continuous model improvement
+**Streamlined two-method detection** focused on semantic understanding and reliability:
 
-**Benefits of OpenCV Removal:**
-- ✅ Simpler installation (no native C++ compilation)
+### Primary: OmniParser v2.0 (100% Integration Complete)
+
+**AI-powered semantic UI detection** with full pipeline capabilities:
+
+- ✅ **YOLOv8 Icon Detection** - ~50MB model, fine-tuned for UI elements
+- ✅ **Florence-2 Captioning** - ~800MB model, functional descriptions
+- ✅ **PaddleOCR/EasyOCR Integration** - Text detection (+35% element coverage)
+- ✅ **Interactivity Detection** - Clickable vs decorative (-15% false positives)
+- ✅ **Overlap Filtering** - IoU-based duplicate removal
+- ✅ **Batch Caption Processing** - 5x faster with GPU batching
+- ✅ **89% Click Accuracy** - Up from 72% with classical CV methods
+
+**Performance:**
+- Icon Detection: ~0.6s/frame (NVIDIA GPU), ~1-2s (Apple Silicon), ~8-15s (CPU)
+- Full Pipeline: ~1.6s/frame (GPU) with OCR + detection + captioning
+- Benchmark: 39.6% on ScreenSpot Pro
+
+**Configuration:**
+```bash
+BYTEBOT_CV_USE_OMNIPARSER=true             # Enable OmniParser
+BYTEBOT_CV_USE_OMNIPARSER_OCR=true         # Enable OCR integration
+OMNIPARSER_URL=http://localhost:9989       # Service endpoint
+OMNIPARSER_DEVICE=auto                     # auto, cuda, mps, cpu
+OMNIPARSER_MIN_CONFIDENCE=0.3              # Detection threshold
+OMNIPARSER_IOU_THRESHOLD=0.7               # Overlap filtering
+OMNIPARSER_BATCH_SIZE=128                  # Caption batch size
+```
+
+### Fallback: Tesseract.js OCR
+
+**Pure JavaScript text extraction** when OmniParser unavailable:
+- No native dependencies (no compilation required)
+- Text-based element detection
+- Automatic fallback when OmniParser disabled
+
+### Real-Time CV Activity Monitoring
+
+**Live visibility into computer vision operations:**
+
+- **Animated Method Indicators** - Color-coded badges (OmniParser: Pink, OCR: Yellow)
+- **OmniParser Model Display** - Shows YOLOv8 + Florence-2 models in real-time
+- **GPU Detection** - Visual indicators: ⚡ NVIDIA GPU, 🍎 Apple Silicon, 💻 CPU
+- **Performance Metrics** - Avg time, total executions, success rate, compute device
+- **UI Integration** - Dedicated panels on Desktop and Task pages with 500ms polling
+
+**API Endpoints:**
+```bash
+GET /cv-activity/stream      # Real-time activity (500ms polling)
+GET /cv-activity/status      # Current snapshot
+GET /cv-activity/performance # Performance statistics
+GET /cv-activity/history     # Last 20 executions
+```
+
+**Benefits vs OpenCV:**
+- ✅ Simpler installation (no C++ compilation)
 - ✅ Smaller package size (~850MB vs multiple GB)
 - ✅ Better cross-platform compatibility
-- ✅ Superior detection accuracy with OmniParser (89% vs ~60% with classical CV)
+- ✅ Superior accuracy (89% vs ~60%)
 
-### Keyboard & Shortcut Reliability
+---
 
-`NutService` on the desktop daemon parses compound shortcuts such as `ctrl+shift+p`, mixed-case modifiers, and platform aliases (`cmd`, `option`, `win`). Legacy arrays like `['Control', 'Shift', 'X']` continue to work, but LLM tool calls can now emit compact strings and rely on the daemon to normalize, validate, and execute the correct nut-js sequence.
+## Desktop Accuracy Dashboard
 
-### Troubleshooting
+The `/desktop` route provides real-time telemetry with session management:
 
-**UI shows "ECONNREFUSED" to port 9991:**
-- Check agent health: `docker compose ps bytebot-agent`
-- View agent logs: `docker compose logs bytebot-agent`
-- Verify database migrations: `docker exec bytebot-agent npx prisma migrate status`
+- **Live Metrics** - Success rate, weighted offsets, convergence score for current session
+- **Session Selector** - Jump between historical sessions to compare performance
+- **Reset Controls** - Zero out metrics for clean benchmark runs
+- **Hotspot Visualization** - Identify UI zones with click accuracy issues
 
-**OmniParser connection issues:**
-- Apple Silicon: Ensure native OmniParser is running: `lsof -i :9989`
-- x86_64: Check OmniParser container: `docker logs bytebot-omniparser`
-- Verify `OMNIPARSER_URL` in `docker/.env.defaults` matches your platform
+**Learning Metrics:**
+- **Attempt count** - Sample size for current session
+- **Success rate** - Percentage within configured radius (`BYTEBOT_SMART_CLICK_SUCCESS_RADIUS=12`)
+- **Weighted offsets** - Average X/Y drift weighted by recency
+- **Convergence** - Decay-weighted stability score (trends to 1.0 when calibrated)
+- **Hotspots** - Clustered miss regions for targeted improvement
 
-**Database errors:**
-- The agent automatically applies migrations on startup
-- Manual migration: `docker exec bytebot-agent npx prisma migrate deploy`
+![Desktop accuracy drawer](docs/images/hawkeye3.png)
 
-## Advanced: Manual Docker Compose Setup
+---
 
-![Desktop accuracy overlay](docs/images/hawkeye1.png)
+## Advanced Setup
 
-If you prefer to run Docker Compose manually instead of using the automated `start-stack.sh` script, follow these steps:
+### Manual Docker Compose (Proxy Stack)
 
-### Using the Proxy Stack (Recommended)
-
-The proxy stack includes LiteLLM for unified model access across providers:
+If you prefer manual control over the automated `start-stack.sh`:
 
 ```bash
-# 1. Configure API keys in docker/.env (API keys ONLY)
+# 1. Configure API keys in docker/.env
 cat <<'EOF' > docker/.env
 ANTHROPIC_API_KEY=sk-ant-...
 OPENAI_API_KEY=sk-...
@@ -323,58 +309,128 @@ GEMINI_API_KEY=...
 OPENROUTER_API_KEY=sk-or-v1-...
 EOF
 
-# 2. System configuration is already set in docker/.env.defaults
-#    (OmniParser settings, Hawkeye features, etc.)
-
-# 3. Start the full stack with proxy
+# 2. Start full stack with LiteLLM proxy
 docker compose -f docker/docker-compose.proxy.yml up -d --build
 ```
 
-**Available Models via Proxy:**
-- Anthropic: `claude-opus-4`, `claude-sonnet-4`
-- OpenAI: `gpt-4o`, `o3`, `gpt-4o-mini`, `gpt-4.1`, `gpt-5` variants
-- OpenRouter: `openrouter-claude-3.7-sonnet`, `openrouter-gemini-2.5-pro`, etc.
-- Local LMStudio: Configure in [`packages/bytebot-llm-proxy/litellm-config.yaml`](packages/bytebot-llm-proxy/litellm-config.yaml)
+### Standard Stack (No Proxy)
 
-To use custom model endpoints, edit `litellm-config.yaml` and restart: `docker compose restart bytebot-llm-proxy`
-
-### Using the Standard Stack (No Proxy)
-
-The standard stack connects directly to provider APIs without LiteLLM:
+Direct provider API access without LiteLLM:
 
 ```bash
-# Start without proxy (uses direct API keys)
 docker compose -f docker/docker-compose.yml up -d --build
 ```
 
-**Note:** Direct API access requires API keys in `docker/.env`. The agent will use the provider-specific services (Anthropic, OpenAI, Google) directly.
-
-## Alternative Deployments
-
-Looking for a different hosting environment? Follow the upstream guides for the full walkthroughs:
+### Alternative Deployments
 
 - [Railway one-click template](https://docs.bytebot.ai/deployment/railway)
 - [Helm charts for Kubernetes](https://docs.bytebot.ai/deployment/helm)
 - [Custom Docker Compose topologies](https://docs.bytebot.ai/deployment/litellm)
 
-## Stay in Sync with Upstream Bytebot
+---
 
-For a full tour of the core desktop agent, installation options, and API surface, follow the upstream README and docs. Hawkeye inherits everything there—virtual desktop orchestration, task APIs, and deployment guides—so this fork focuses documentation on the precision tooling and measurement upgrades described above.
+## Troubleshooting
+
+### UI Connection Errors (ECONNREFUSED :9991)
+```bash
+docker compose ps bytebot-agent          # Check agent status
+docker compose logs bytebot-agent        # View agent logs
+docker exec bytebot-agent npx prisma migrate status  # Verify migrations
+```
+
+### OmniParser Connection Issues
+```bash
+# Apple Silicon: Check native service
+lsof -i :9989
+
+# x86_64: Check container
+docker logs bytebot-omniparser
+
+# Verify configuration
+cat docker/.env.defaults | grep OMNIPARSER_URL
+```
+
+### Database Errors
+```bash
+# Manual migration (agent auto-migrates on startup)
+docker exec bytebot-agent npx prisma migrate deploy
+```
+
+### GPU Not Detected
+```bash
+# Verify nvidia-container-toolkit
+docker run --rm --gpus all nvidia/cuda:11.8.0-base-ubuntu22.04 nvidia-smi
+
+# Check OmniParser logs
+docker logs bytebot-omniparser | grep "device:"
+```
+
+See [GPU Setup Guide](docs/GPU_SETUP.md) for detailed troubleshooting.
+
+---
+
+## Operations & Tuning
+
+### Environment Variables
+
+**Smart Focus:**
+```bash
+BYTEBOT_SMART_FOCUS=true                   # Enable Smart Focus
+BYTEBOT_SMART_FOCUS_MODEL=gpt-4o-mini      # Focus reasoning model
+BYTEBOT_OVERVIEW_GRID=200                  # Coarse grid (px)
+BYTEBOT_FOCUSED_GRID=25                    # Fine grid (px)
+```
+
+**Grid Overlays:**
+```bash
+BYTEBOT_GRID_OVERLAY=true                  # Enable coordinate grids
+BYTEBOT_GRID_DEBUG=false                   # Debug overlays
+```
+
+**Coordinate Accuracy:**
+```bash
+BYTEBOT_COORDINATE_METRICS=true            # Track accuracy
+BYTEBOT_COORDINATE_DEBUG=false             # Deep logging
+BYTEBOT_SMART_CLICK_SUCCESS_RADIUS=12      # Success threshold (px)
+```
+
+**OmniParser:**
+```bash
+BYTEBOT_CV_USE_OMNIPARSER=true             # Enable semantic detection
+BYTEBOT_CV_USE_OMNIPARSER_OCR=true         # OCR integration
+OMNIPARSER_DEVICE=auto                     # auto, cuda, mps, cpu
+```
+
+**Universal Teaching:**
+```bash
+BYTEBOT_UNIVERSAL_TEACHING=true            # Element mapping learning
+BYTEBOT_ADAPTIVE_CALIBRATION=true          # Coordinate calibration
+```
+
+### Smart Click Success Radius
+
+Tune the pass/fail threshold for click accuracy:
+
+```bash
+export BYTEBOT_SMART_CLICK_SUCCESS_RADIUS=12  # pixels of acceptable drift
+```
+
+Increase for higher cursor drift tolerance, decrease for stricter accuracy requirements.
+
+---
 
 ## Further Reading
 
 - [Bytebot upstream README](https://github.com/bytebot-ai/bytebot#readme)
 - [Quickstart guide](https://docs.bytebot.ai/quickstart)
 - [API reference](https://docs.bytebot.ai/api-reference/introduction)
+- [Smart Focus System](docs/SMART_FOCUS_SYSTEM.md)
+- [GPU Setup Guide](docs/GPU_SETUP.md)
 
-## Operations & Tuning
+---
 
-### Smart Click Success Radius
+<div align="center">
 
-Smart click telemetry now records the real cursor landing position. Tune the pass/fail threshold by setting an environment variable on the desktop daemon:
+**Built on [Bytebot](https://github.com/bytebot-ai/bytebot) • Enhanced with Hawkeye precision tooling**
 
-```bash
-export BYTEBOT_SMART_CLICK_SUCCESS_RADIUS=12  # pixels of acceptable drift
-```
-
-Increase the value if the VNC stream or hardware introduces more cursor drift, or decrease it to tighten the definition of a successful AI-guided click.
+</div>
