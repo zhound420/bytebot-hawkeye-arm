@@ -155,25 +155,50 @@ echo ""
 
 # Check for Windows ISO (if using Windows desktop platform)
 if [ "$DESKTOP_PLATFORM" = "windows" ] || grep -q "BYTEBOT_DESKTOP_PLATFORM=windows" docker/.env 2>/dev/null; then
-    ISO_PATH="$HOME/.cache/bytebot/iso/tiny11-2311.iso"
+    CACHE_DIR="$HOME/.cache/bytebot/iso"
+    VARIANT_FILE="$CACHE_DIR/.variant"
+    SYMLINK_PATH="$CACHE_DIR/windows.iso"
+
     echo -e "${BLUE}Step 3b: Checking for cached Windows ISO...${NC}"
 
-    if [ -f "$ISO_PATH" ]; then
-        ISO_SIZE_MB=$(du -m "$ISO_PATH" | cut -f1)
-        echo -e "${GREEN}✓ Using cached Tiny11 ISO (${ISO_SIZE_MB}MB)${NC}"
-        echo -e "${BLUE}  Location: $ISO_PATH${NC}"
+    # Check if symlink exists and points to valid file
+    if [ -L "$SYMLINK_PATH" ] && [ -e "$SYMLINK_PATH" ]; then
+        # Get variant from metadata
+        if [ -f "$VARIANT_FILE" ]; then
+            VARIANT=$(cat "$VARIANT_FILE")
+            case "$VARIANT" in
+                standard)
+                    VARIANT_NAME="Tiny11 2311 (Standard)"
+                    ;;
+                core)
+                    VARIANT_NAME="Tiny11 Core x64"
+                    ;;
+                *)
+                    VARIANT_NAME="Unknown variant"
+                    ;;
+            esac
+        else
+            VARIANT_NAME="Unknown variant"
+        fi
+
+        ISO_SIZE_MB=$(du -m "$SYMLINK_PATH" 2>/dev/null | cut -f1)
+        echo -e "${GREEN}✓ Using cached Windows ISO: ${VARIANT_NAME} (${ISO_SIZE_MB}MB)${NC}"
+        echo -e "${BLUE}  Location: $SYMLINK_PATH${NC}"
     else
-        echo -e "${YELLOW}⚠ Tiny11 ISO not found in cache${NC}"
-        echo -e "${YELLOW}  Expected location: $ISO_PATH${NC}"
+        echo -e "${YELLOW}⚠ Windows ISO not found in cache${NC}"
+        echo -e "${YELLOW}  Expected location: $SYMLINK_PATH${NC}"
         echo ""
-        read -p "Download Tiny11 ISO now? (~3GB, takes 5-15 min) [Y/n] " -n 1 -r
+        read -p "Download Windows ISO now? (~3GB, takes 5-15 min) [Y/n] " -n 1 -r
         echo
         if [[ ! $REPLY =~ ^[Nn]$ ]]; then
             echo -e "${BLUE}Running download script...${NC}"
+            echo ""
             ./scripts/download-windows-iso.sh
             if [ $? -eq 0 ]; then
+                echo ""
                 echo -e "${GREEN}✓ ISO download complete${NC}"
             else
+                echo ""
                 echo -e "${RED}✗ ISO download failed${NC}"
                 echo "You can manually download later with: ./scripts/download-windows-iso.sh"
                 echo "Continuing without Windows desktop..."

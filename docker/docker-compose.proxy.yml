@@ -227,8 +227,9 @@ services:
     cap_add:
       - NET_ADMIN  # Network administration
     volumes:
-      # Cached Tiny11 ISO (downloaded via scripts/download-windows-iso.sh)
-      - ~/.cache/bytebot/iso/tiny11-2311.iso:/custom.iso:ro
+      # Cached Tiny11 ISO (symlink to active variant)
+      # Download via: ./scripts/download-windows-iso.sh
+      - ~/.cache/bytebot/iso/windows.iso:/custom.iso:ro
       # OEM firstboot scripts (runs on first boot via Windows setup)
       - ../packages/omnibox/vm/win11setup/firstboot:/oem
       # Setup scripts (Python server, tools installation)
