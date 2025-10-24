@@ -201,9 +201,9 @@ export class ComputerUseService {
    * Scroll
    */
   async scroll(params: ScrollAction): Promise<void> {
-    const { direction, amount = 3 } = params;
+    const { direction, scrollCount = 3 } = params;
 
-    const scrollAmount = direction === 'up' ? amount : -amount;
+    const scrollAmount = direction === 'up' ? scrollCount : -scrollCount;
 
     const pythonCode = this.omniboxClient.buildPyAutoGUICommand('scroll', {
       clicks: scrollAmount,
@@ -211,16 +211,16 @@ export class ComputerUseService {
 
     await this.omniboxClient.execute(pythonCode);
 
-    this.logger.debug(`Scrolled ${direction} by ${amount}`);
+    this.logger.debug(`Scrolled ${direction} by ${scrollCount}`);
   }
 
   /**
    * Launch application via Start menu
    */
   async launchApplication(params: ApplicationAction): Promise<void> {
-    const { name } = params;
+    const { application } = params;
 
-    if (!name) {
+    if (!application) {
       throw new Error('Application name required');
     }
 
@@ -233,7 +233,7 @@ pyautogui.FAILSAFE = False
 pyautogui.press('win')
 time.sleep(0.5)
 # Type app name
-pyautogui.write('${name.replace(/'/g, "\\'")}')
+pyautogui.write('${application.replace(/'/g, "\\'")}')
 time.sleep(0.5)
 # Press Enter
 pyautogui.press('enter')
@@ -241,7 +241,7 @@ pyautogui.press('enter')
 
     await this.omniboxClient.execute(pythonCode);
 
-    this.logger.debug(`Launched application: ${name}`);
+    this.logger.debug(`Launched application: ${application}`);
   }
 
   /**
