@@ -1,11 +1,20 @@
 #!/bin/bash
 
-# Setup script for Trajectory Distillation & Few-Shot Learning
-# Enables pgvector extension and runs database migrations
+# Manual Setup/Troubleshooting Script for Trajectory Learning System
+#
+# NOTE: This script is NOT required for normal operation!
+# The model learning system sets up automatically on first stack start.
+#
+# Use this script only for:
+# - Troubleshooting existing database issues
+# - Manually enabling pgvector on existing databases
+# - Verifying trajectory table creation
+#
+# For normal setup, just run: ./scripts/start-stack.sh
 
 set -e
 
-echo "🚀 Setting up Trajectory Learning System..."
+echo "🔧 Manual Trajectory Learning System Setup/Troubleshooting..."
 
 # Colors
 GREEN='\033[0;32m'
@@ -67,18 +76,21 @@ fi
 
 # Summary
 echo -e "\n${GREEN}================================================${NC}"
-echo -e "${GREEN}Trajectory Learning System Setup Complete!${NC}"
+echo -e "${GREEN}Manual Setup/Troubleshooting Complete!${NC}"
 echo -e "${GREEN}================================================${NC}"
 echo -e ""
-echo -e "${YELLOW}Configuration:${NC}"
+echo -e "${YELLOW}Note:${NC} This script is for troubleshooting only."
+echo -e "The model learning system sets up ${GREEN}automatically${NC} on first stack start."
+echo -e ""
+echo -e "${YELLOW}System Configuration (enabled by default):${NC}"
 echo -e "  • Trajectory recording: BYTEBOT_RECORD_TRAJECTORIES=true"
 echo -e "  • Few-shot learning: BYTEBOT_USE_FEW_SHOT=true"
 echo -e "  • Source models: BYTEBOT_RECORD_MODEL_PROVIDERS=anthropic"
 echo -e ""
-echo -e "${YELLOW}Next steps:${NC}"
-echo -e "  1. Ensure OpenAI API key is set (for embeddings): OPENAI_API_KEY or BYTEBOT_EMBEDDING_API_KEY"
-echo -e "  2. Run tasks with Claude models to build trajectory dataset"
-echo -e "  3. Test with other models (GPT, Gemini) to see improvement"
-echo -e "  4. Export training data: cd packages/bytebot-agent && npm run export:trajectories"
+echo -e "${YELLOW}What happens automatically:${NC}"
+echo -e "  1. pgvector extension enabled via migration"
+echo -e "  2. Trajectory tables created via Prisma"
+echo -e "  3. Claude's successful runs recorded for learning"
+echo -e "  4. Other models auto-improve via few-shot examples"
 echo -e ""
-echo -e "${GREEN}System is ready to learn from successful task completions!${NC}"
+echo -e "${GREEN}System ready! Just run: ./scripts/start-stack.sh${NC}"

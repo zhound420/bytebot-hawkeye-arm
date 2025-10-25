@@ -142,32 +142,18 @@ The setup script auto-detects your hardware and installs the optimal configurati
 ./scripts/stop-stack.sh
 ```
 
-### Step 5: Enable Model Learning System (Optional)
+**That's it!** The model learning system is **enabled by default** and sets up automatically on first start:
+- ✅ pgvector extension enabled automatically
+- ✅ Trajectory tables created via Prisma migrations
+- ✅ Claude's successful runs recorded for learning
+- ✅ Other models (GPT-4o, Gemini) auto-improve via few-shot examples
 
-Enable other models (GPT-4o, Gemini, local models) to learn from Claude's successful task completions:
-
-```bash
-./scripts/setup-trajectory-db.sh
-```
-
-This will:
-- ✅ Enable pgvector extension for semantic search
-- ✅ Run database migrations for trajectory tables
-- ✅ Verify setup
-
-**Configuration** (already enabled by default in `docker/.env.defaults`):
-```bash
-BYTEBOT_RECORD_TRAJECTORIES=true     # Record Claude's successful runs
-BYTEBOT_USE_FEW_SHOT=true            # Auto-inject similar examples
-BYTEBOT_FEW_SHOT_COUNT=3             # Number of examples per task
-```
-
-**Expected Results:**
-- 📈 35-50% immediate improvement in non-Claude model success rates
-- 🎓 Automatic learning from every successful Claude task
+**Expected Benefits:**
+- 📈 35-50% improvement in non-Claude model success rates
+- 🎓 Continuous learning from every successful Claude task
 - 💰 50-70% cost reduction (more tasks can use cheaper models)
 
-See [MODEL_LEARNING_SYSTEM.md](docs/MODEL_LEARNING_SYSTEM.md) for full details and API reference.
+See [MODEL_LEARNING_SYSTEM.md](docs/MODEL_LEARNING_SYSTEM.md) for configuration details and API reference.
 
 ---
 
