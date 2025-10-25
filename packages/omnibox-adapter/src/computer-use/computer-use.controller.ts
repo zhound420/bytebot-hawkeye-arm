@@ -1,6 +1,7 @@
 import {
   Controller,
   Post,
+  Get,
   Body,
   Logger,
   HttpException,
@@ -19,6 +20,11 @@ export class ComputerUseController {
   private readonly logger = new Logger(ComputerUseController.name);
 
   constructor(private readonly computerUseService: ComputerUseService) {}
+
+  @Get()
+  async health() {
+    return { status: 'ok', service: 'omnibox-adapter' };
+  }
 
   @Post()
   async action(@Body() params: ComputerAction) {
