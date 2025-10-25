@@ -91,16 +91,19 @@ See `packages/omnibox-adapter/README.md` for details.
 
 ## Management Commands
 
+Use the management script for manual VM control:
+
 ```bash
-# Start VM
-./scripts/manage_vm.sh start
-
-# Stop VM
-./scripts/manage_vm.sh stop
-
-# Delete VM (WARNING: destroys all data)
-./scripts/manage_vm.sh delete
+# From project root
+./scripts/manage-omnibox.sh status   # Check VM status
+./scripts/manage-omnibox.sh start    # Start existing VM (~30s)
+./scripts/manage-omnibox.sh stop     # Stop VM
+./scripts/manage-omnibox.sh restart  # Restart VM
+./scripts/manage-omnibox.sh logs     # View VM logs
+./scripts/manage-omnibox.sh delete   # Delete VM (WARNING: destroys all data)
 ```
+
+**Note:** For a complete fresh build with platform selection, use `./scripts/fresh-build.sh` instead.
 
 ## Architecture
 

@@ -196,10 +196,58 @@ if [ "$DESKTOP_PLATFORM" = "windows" ] || grep -q "BYTEBOT_DESKTOP_PLATFORM=wind
         fi
     fi
     echo ""
+
+    # Check if OmniBox VM already exists (persistent volume)
+    if docker volume ls --format '{{.Name}}' | grep -q "^bytebot_omnibox_data$"; then
+        VOLUME_SIZE=$(docker volume inspect bytebot_omnibox_data --format '{{.Mountpoint}}' 2>/dev/null | xargs -I{} du -sh {} 2>/dev/null | cut -f1 || echo "unknown")
+        echo -e "${BLUE}Step 3c: OmniBox VM Status${NC}"
+        echo -e "${GREEN}✓ Existing Windows installation detected${NC}"
+        echo -e "${BLUE}  Volume: bytebot_omnibox_data (${VOLUME_SIZE})${NC}"
+        echo -e "${BLUE}  Startup: ~30 seconds (reusing existing VM)${NC}"
+        echo ""
+        echo -e "${YELLOW}⚠ Reinstall Windows from scratch?${NC}"
+        echo "  This will DELETE the existing VM and reinstall Windows (20-90 minutes)"
+        echo "  Use this if:"
+        echo "    - VM is corrupted or unstable"
+        echo "    - Testing fresh Windows installation"
+        echo "    - Want to reclaim disk space"
+        echo ""
+        read -p "Reinstall Windows from scratch? [y/N] " -n 1 -r
+        echo
+        if [[ $REPLY =~ ^[Yy]$ ]]; then
+            echo ""
+            echo -e "${RED}⚠⚠⚠ WARNING ⚠⚠⚠${NC}"
+            echo -e "${RED}This will PERMANENTLY DELETE all data in the Windows VM!${NC}"
+            echo ""
+            read -p "Type 'DELETE' to confirm: " confirm
+            if [ "$confirm" = "DELETE" ]; then
+                echo ""
+                echo -e "${BLUE}Removing OmniBox volume...${NC}"
+                docker volume rm bytebot_omnibox_data || {
+                    echo -e "${YELLOW}Volume might be in use, stopping containers first...${NC}"
+                    docker stop bytebot-omnibox bytebot-omnibox-adapter 2>/dev/null || true
+                    docker rm bytebot-omnibox bytebot-omnibox-adapter 2>/dev/null || true
+                    docker volume rm bytebot_omnibox_data
+                }
+                echo -e "${GREEN}✓ OmniBox volume deleted${NC}"
+                echo -e "${YELLOW}Windows will be installed from scratch (this will take 20-90 minutes)${NC}"
+            else
+                echo -e "${YELLOW}Cancelled - keeping existing VM${NC}"
+            fi
+        else
+            echo -e "${GREEN}Keeping existing VM (fast startup)${NC}"
+        fi
+        echo ""
+    else
+        echo -e "${BLUE}Step 3c: OmniBox VM Status${NC}"
+        echo -e "${YELLOW}No existing Windows installation found${NC}"
+        echo -e "${BLUE}Windows will be installed from scratch (20-90 minutes on first boot)${NC}"
+        echo ""
+    fi
 fi
 
 # Build shared package first (required dependency)
-echo -e "${BLUE}Step 4: Building shared package...${NC}"
+echo -e "${BLUE}Step 5: Building shared package...${NC}"
 cd packages/shared
 npm install
 npm run build
@@ -208,7 +256,7 @@ cd ../..
 echo ""
 
 # Build bytebot-cv package (depends on shared)
-echo -e "${BLUE}Step 5: Building bytebot-cv package...${NC}"
+echo -e "${BLUE}Step 6: Building bytebot-cv package...${NC}"
 cd packages/bytebot-cv
 # Clean local node_modules if npm install fails
 if [ -d "node_modules" ]; then
@@ -222,7 +270,7 @@ cd ../..
 echo ""
 
 # Setup OmniParser if needed
-echo -e "${BLUE}Step 6: Setting up OmniParser...${NC}"
+echo -e "${BLUE}Step 7: Setting up OmniParser...${NC}"
 if [ -f "scripts/setup-omniparser.sh" ]; then
     ./scripts/setup-omniparser.sh
 else
@@ -231,7 +279,7 @@ fi
 echo ""
 
 # LMStudio Configuration (optional)
-echo -e "${BLUE}Step 6.5: LMStudio Model Discovery (optional)${NC}"
+echo -e "${BLUE}Step 7.5: LMStudio Model Discovery (optional)${NC}"
 echo "LMStudio allows running local VLM models on your network."
 read -p "Configure LMStudio models? [y/N]: " setup_lmstudio
 
@@ -242,7 +290,7 @@ echo ""
 
 # Start OmniParser for Apple Silicon (native with MPS GPU)
 if [[ "$ARCH" == "arm64" ]] && [[ "$PLATFORM" == "macOS" ]]; then
-    echo -e "${BLUE}Step 7: Starting native OmniParser (Apple Silicon with MPS GPU)...${NC}"
+    echo -e "${BLUE}Step 8: Starting native OmniParser (Apple Silicon with MPS GPU)...${NC}"
     if [ -f "scripts/start-omniparser.sh" ]; then
         ./scripts/start-omniparser.sh
         echo ""
@@ -260,7 +308,7 @@ if [[ "$ARCH" == "arm64" ]] && [[ "$PLATFORM" == "macOS" ]]; then
     fi
     echo ""
 else
-    echo -e "${BLUE}Step 7: OmniParser will run in Docker container${NC}"
+    echo -e "${BLUE}Step 8: OmniParser will run in Docker container${NC}"
     if [[ "$PLATFORM" == "Windows (WSL)" ]] || [[ "$PLATFORM" == "Linux" ]]; then
         echo -e "${BLUE}(CUDA GPU acceleration if available)${NC}"
     fi
@@ -268,7 +316,7 @@ else
 fi
 
 # Build and start Docker stack with fresh build
-echo -e "${BLUE}Step 8: Building Docker containers (this may take several minutes)...${NC}"
+echo -e "${BLUE}Step 9: Building Docker containers (this may take several minutes)...${NC}"
 echo ""
 
 cd docker
