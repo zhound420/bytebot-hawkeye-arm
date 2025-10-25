@@ -61,12 +61,18 @@ import {
 } from './agent.types';
 import {
   buildAgentSystemPrompt,
+  buildEnhancedAgentSystemPrompt,
   SCREENSHOT_OBSERVATION_GUARD_MESSAGE,
   SUMMARIZATION_SYSTEM_PROMPT,
 } from './agent.constants';
 import { SummariesService } from '../summaries/summaries.service';
 import { handleComputerToolUse } from './agent.computer-use';
 import { ProxyService } from '../proxy/proxy.service';
+import {
+  TrajectoryRecorderService,
+  TrajectorySearchService,
+  IterationSnapshot,
+} from '../trajectory';
 
 type CachedDetectedElement = {
   element: DetectedElement;
@@ -190,6 +196,8 @@ export class AgentProcessor {
     private readonly elementDetector: ElementDetectorService,
     private readonly enhancedVisualDetector: EnhancedVisualDetectorService,
     private readonly cvActivityService: CVActivityIndicatorService,
+    private readonly trajectoryRecorder: TrajectoryRecorderService,
+    private readonly trajectorySearch: TrajectorySearchService,
   ) {
     this.services = {
       anthropic: this.anthropicService,
@@ -711,8 +719,15 @@ Focus on words that would appear in UI element descriptions. Be specific and use
   }
 
   @OnEvent('task.takeover')
-  handleTaskTakeover({ taskId }: { taskId: string }) {
+  async handleTaskTakeover({ taskId }: { taskId: string }) {
     this.logger.log(`Task takeover event received for task ID: ${taskId}`);
+
+    // Record user intervention for trajectory learning
+    try {
+      await this.trajectoryRecorder.recordUserIntervention(taskId);
+    } catch (error) {
+      this.logger.error(`Failed to record user intervention: ${error.message}`);
+    }
 
     // If the agent is still processing this task, abort any in-flight operations
     if (this.currentTaskId === taskId && this.isProcessing) {
@@ -737,6 +752,13 @@ Focus on words that would appear in UI element descriptions. Be specific and use
   async handleTaskCancel({ taskId }: { taskId: string }) {
     this.logger.log(`Task cancel event received for task ID: ${taskId}`);
 
+    // Cancel trajectory recording
+    try {
+      await this.trajectoryRecorder.cancelTrajectory(taskId);
+    } catch (error) {
+      this.logger.error(`Failed to cancel trajectory: ${error.message}`);
+    }
+
     if (this.currentTaskId !== taskId) {
       this.logger.log(
         `Ignoring cancel event for task ID: ${taskId} because current task is ${this.currentTaskId}`,
@@ -747,7 +769,7 @@ Focus on words that would appear in UI element descriptions. Be specific and use
     await this.stopProcessing();
   }
 
-  processTask(taskId: string) {
+  async processTask(taskId: string) {
     this.logger.log(`Starting processing for task ID: ${taskId}`);
 
     if (this.isProcessing) {
@@ -763,6 +785,21 @@ Focus on words that would appear in UI element descriptions. Be specific and use
     // Initialize stuck detection state
     this.taskIterationCount.set(taskId, 0);
     this.taskLastActionTime.set(taskId, new Date());
+
+    // Start trajectory recording if enabled
+    try {
+      const task = await this.tasksService.findById(taskId);
+      const model = task.model as unknown as BytebotAgentModel;
+      if (this.trajectoryRecorder.isEnabled()) {
+        await this.trajectoryRecorder.startTrajectory(
+          taskId,
+          model.provider,
+          model.name,
+        );
+      }
+    } catch (error) {
+      this.logger.error(`Failed to start trajectory recording: ${error.message}`);
+    }
 
     // Kick off the first iteration without blocking the caller
     void this.runIteration(taskId);
@@ -784,6 +821,28 @@ Focus on words that would appear in UI element descriptions. Be specific and use
         this.logger.log(
           `Task processing completed for task ID: ${taskId} with status: ${task.status}`,
         );
+
+        // Complete trajectory recording
+        try {
+          const success = task.status === TaskStatus.COMPLETED;
+          const model = task.model as unknown as BytebotAgentModel;
+
+          // Get click accuracy from CV activity
+          const cvSummary = this.cvActivityService.getDetectionSummary();
+          const clickAccuracy =
+            cvSummary.clicks.total > 0
+              ? cvSummary.clicks.successful / cvSummary.clicks.total
+              : undefined;
+
+          await this.trajectoryRecorder.completeTrajectory(taskId, success, {
+            clickAccuracy,
+          });
+        } catch (error) {
+          this.logger.error(
+            `Failed to complete trajectory recording: ${error.message}`,
+          );
+        }
+
         this.isProcessing = false;
         this.currentTaskId = null;
 
@@ -886,8 +945,48 @@ Do NOT take screenshots without acting. Do NOT repeat previous actions. Choose o
       const currentTime = now.toLocaleTimeString();
       const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
+      // Retrieve few-shot examples for non-Claude models if enabled
+      let systemPrompt: string;
+      let fewShotExamples: string | undefined;
+
+      if (
+        this.trajectorySearch.isAvailable() &&
+        model.provider !== 'anthropic'
+      ) {
+        try {
+          const similarTrajectories =
+            await this.trajectorySearch.findSimilar({
+              taskDescription: task.description,
+              successOnly: true,
+            });
+
+          if (similarTrajectories.length > 0) {
+            fewShotExamples =
+              this.trajectorySearch.formatAsFewShot(similarTrajectories);
+            this.logger.debug(
+              `Injecting ${similarTrajectories.length} few-shot examples for ${model.provider}`,
+            );
+          }
+        } catch (error) {
+          this.logger.error(
+            `Failed to retrieve few-shot examples: ${error.message}`,
+          );
+        }
+      }
+
+      // Build system prompt with few-shot examples and provider-specific adaptations
+      systemPrompt = buildEnhancedAgentSystemPrompt(
+        currentDate,
+        currentTime,
+        timeZone,
+        {
+          modelProvider: model.provider,
+          fewShotExamples,
+        },
+      );
+
       agentResponse = await service.generateMessage(
-        buildAgentSystemPrompt(currentDate, currentTime, timeZone),
+        systemPrompt,
         messages,
         model.name,
         true,
@@ -917,6 +1016,31 @@ Do NOT take screenshots without acting. Do NOT repeat previous actions. Choose o
         role: Role.ASSISTANT,
         taskId,
       });
+
+      // Record iteration for trajectory learning
+      try {
+        const systemPrompt = buildAgentSystemPrompt(currentDate, currentTime, timeZone);
+        const iterationSnapshot: IterationSnapshot = {
+          iterationNumber: iterationCount,
+          systemPrompt,
+          messages: messages.map((m) => ({
+            role: m.role,
+            content: m.content,
+          })),
+          toolCalls: messageContentBlocks.filter(
+            (b: MessageContentBlock) => b.type === MessageContentType.ToolUse,
+          ),
+          tokenUsage: {
+            input: agentResponse.tokenUsage.inputTokens,
+            output: agentResponse.tokenUsage.outputTokens,
+          },
+          timestamp: new Date(),
+        };
+
+        await this.trajectoryRecorder.recordIteration(taskId, iterationSnapshot);
+      } catch (error) {
+        this.logger.error(`Failed to record iteration: ${error.message}`);
+      }
 
       // Calculate if we need to summarize based on token usage
       const contextWindow = model.contextWindow || 200000; // Default to 200k if not specified

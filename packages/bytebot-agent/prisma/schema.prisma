@@ -56,12 +56,13 @@ model Task {
   queuedAt     DateTime?
   error        String?
   result       Json?
-  // Example: 
+  // Example:
   // { "provider": "anthropic", "name": "claude-opus-4-20250514", "title": "Claude Opus 4" }
   model        Json
   messages     Message[]
   summaries    Summary[]
   files        File[]
+  trajectory   TaskTrajectory?
 }
 
 model Summary {
@@ -124,4 +125,114 @@ model ApiKey {
   lastFour     String
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+}
+
+// ============================================================================
+// Trajectory Distillation & Few-Shot Learning Tables
+// ============================================================================
+
+model TaskTrajectory {
+  id                 String    @id @default(uuid())
+  taskId             String    @unique
+  task               Task      @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  // Model information
+  modelProvider      String    // anthropic, openai, google, proxy
+  modelName          String    // e.g., claude-opus-4-20250514
+
+  // Outcome metrics
+  success            Boolean   // Did the task complete successfully?
+  qualityScore       Float?    // 0.0-1.0, optional manual/auto scoring
+
+  // Execution metrics
+  iterationCount     Int       @default(0)
+  toolCallsCount     Int       @default(0)
+  tokenUsageInput    Int       @default(0)
+  tokenUsageOutput   Int       @default(0)
+  tokenUsageTotal    Int       @default(0)
+
+  // Quality metrics
+  errorRate          Float     @default(0.0) // % of tool calls that errored
+  clickAccuracy      Float?    // From CVActivityIndicator
+  userInterventions  Int       @default(0)   // Times user took over
+
+  // Timestamps
+  startedAt          DateTime
+  completedAt        DateTime?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  // Relations
+  steps              TrajectoryStep[]
+  embedding          TrajectoryEmbedding?
+  fewShotExamples    FewShotExample[]
+
+  @@index([modelProvider, success])
+  @@index([qualityScore])
+  @@index([startedAt])
+}
+
+model TrajectoryStep {
+  id                 String          @id @default(uuid())
+  trajectoryId       String
+  trajectory         TaskTrajectory  @relation(fields: [trajectoryId], references: [id], onDelete: Cascade)
+
+  // Iteration data
+  iterationNumber    Int
+  systemPrompt       String          @db.Text
+  messagesSnapshot   Json            // Messages array at this iteration
+  toolCalls          Json?           // Tool use blocks from this iteration
+  toolResults        Json?           // Tool result blocks from this iteration
+  reasoning          String?         @db.Text // For models that expose reasoning (o1/o3)
+
+  // Token usage for this step
+  tokenUsageInput    Int             @default(0)
+  tokenUsageOutput   Int             @default(0)
+
+  // Timing
+  timestamp          DateTime
+  createdAt          DateTime        @default(now())
+
+  @@index([trajectoryId, iterationNumber])
+}
+
+model TrajectoryEmbedding {
+  id                 String          @id @default(uuid())
+  trajectoryId       String          @unique
+  trajectory         TaskTrajectory  @relation(fields: [trajectoryId], references: [id], onDelete: Cascade)
+
+  // Embedding data
+  taskDescription    String          @db.Text
+  embedding          Unsupported("vector(1536)") // pgvector extension
+
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+
+  @@index([taskDescription])
+}
+
+model FewShotExample {
+  id                 String          @id @default(uuid())
+  trajectoryId       String
+  trajectory         TaskTrajectory  @relation(fields: [trajectoryId], references: [id], onDelete: Cascade)
+
+  // Example metadata
+  title              String
+  description        String          @db.Text
+  condensedContent   String          @db.Text // Human-readable condensed example
+
+  // Categorization
+  taskType           String?         // e.g., "web_navigation", "file_manipulation"
+  difficulty         String?         // easy, medium, hard
+
+  // Usage tracking
+  isActive           Boolean         @default(true)
+  usageCount         Int             @default(0)
+  lastUsedAt         DateTime?
+
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+
+  @@index([taskType, isActive])
+  @@index([usageCount])
 }

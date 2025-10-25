@@ -295,3 +295,136 @@ ADDITIONAL GUIDANCE
 Accuracy outranks speed. Think aloud, justify every coordinate, and keep the audit trail obvious.
 
 `;
+
+/**
+ * Enhanced system prompt builder with few-shot learning and provider-specific adaptations
+ */
+export const buildEnhancedAgentSystemPrompt = (
+  currentDate: string,
+  currentTime: string,
+  timeZone: string,
+  options?: {
+    modelProvider?: string;
+    fewShotExamples?: string;
+  },
+): string => {
+  const basePrompt = buildAgentSystemPrompt(currentDate, currentTime, timeZone);
+
+  // If no options provided, return base prompt
+  if (!options) {
+    return basePrompt;
+  }
+
+  const { modelProvider, fewShotExamples } = options;
+
+  // Build enhanced sections
+  const sections: string[] = [];
+
+  // Add few-shot examples if provided
+  if (fewShotExamples && fewShotExamples.trim().length > 0) {
+    sections.push(`
+════════════════════════════════
+LEARNING FROM SUCCESSFUL EXAMPLES
+════════════════════════════════
+${fewShotExamples}
+
+**Note:** These examples show how similar tasks were completed successfully. Use them as guidance for approach and tool usage, but adapt to your specific task requirements.
+`);
+  }
+
+  // Add provider-specific adaptations
+  if (modelProvider) {
+    sections.push(getProviderSpecificGuidance(modelProvider));
+  }
+
+  // Insert sections after the workstation snapshot but before operating principles
+  const workstationEndMarker = '════════════════════════════════\nOPERATING PRINCIPLES';
+  const parts = basePrompt.split(workstationEndMarker);
+
+  if (parts.length === 2) {
+    return parts[0] + sections.join('\n') + '\n' + workstationEndMarker + parts[1];
+  }
+
+  // Fallback: append to end if marker not found
+  return basePrompt + '\n' + sections.join('\n');
+};
+
+/**
+ * Provider-specific guidance for optimal performance
+ */
+function getProviderSpecificGuidance(provider: string): string {
+  switch (provider) {
+    case 'openai':
+      return `
+════════════════════════════════
+EXECUTION APPROACH (OpenAI Models)
+════════════════════════════════
+**Structured Reasoning:**
+- **Step 1: Observe** - Take screenshot and enumerate all visible UI elements
+- **Step 2: Analyze** - Identify target element and determine best interaction method
+- **Step 3: Plan** - Choose tool sequence (prefer CV-first clicking)
+- **Step 4: Execute** - Perform actions with precise tool calls
+- **Step 5: Verify** - Confirm success with follow-up screenshot
+
+**Error Handling:**
+- If a tool call fails, immediately analyze why and try alternative approach
+- Document each retry attempt and what changed
+- After 2 failures, consider requesting human help
+
+**Quality Checks:**
+- Before each action, explicitly state your confidence level (high/medium/low)
+- For low confidence actions, use computer_screenshot_region to zoom first
+- Always verify critical operations (file saves, form submissions, deletions)
+`;
+
+    case 'google':
+      return `
+════════════════════════════════
+EXECUTION APPROACH (Gemini Models)
+════════════════════════════════
+**Visual-First Strategy:**
+- Prioritize visual analysis from screenshots
+- Use computer_detect_elements extensively for all UI interactions
+- Describe what you see in detail before acting
+
+**Efficient Tool Usage:**
+- Batch related operations together
+- Minimize back-and-forth tool calls
+- Use keyboard shortcuts when available
+
+**Clear Communication:**
+- State your intent before each action
+- Explain reasoning concisely
+- Report progress for multi-step tasks
+`;
+
+    case 'proxy':
+      return `
+════════════════════════════════
+EXECUTION APPROACH (Model via Proxy)
+════════════════════════════════
+**Robust Approach:**
+- Follow the CV-first clicking workflow strictly
+- Use explicit step-by-step reasoning
+- Verify each action before proceeding
+- Handle errors gracefully with fallback strategies
+`;
+
+    case 'anthropic':
+      // Claude models already optimized for the base prompt
+      return '';
+
+    default:
+      return `
+════════════════════════════════
+EXECUTION APPROACH
+════════════════════════════════
+**Systematic Method:**
+1. Observe UI state thoroughly
+2. Plan action sequence explicitly
+3. Execute with CV-first clicking (computer_detect_elements → computer_click_element)
+4. Verify results with screenshots
+5. Handle errors with clear fallback logic
+`;
+  }
+}

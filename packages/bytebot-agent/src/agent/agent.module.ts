@@ -13,6 +13,7 @@ import { AgentAnalyticsService } from './agent.analytics';
 import { ProxyModule } from 'src/proxy/proxy.module';
 import { BytebotCvModule, EnhancedCVModule } from '@bytebot/cv';
 import { LearningMetricsController } from './learning-metrics.controller';
+import { TrajectoryModule } from '../trajectory/trajectory.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { LearningMetricsController } from './learning-metrics.controller';
     ProxyModule,
     BytebotCvModule,
     EnhancedCVModule, // @Global() module - NestJS will reuse the same instance
+    TrajectoryModule, // Trajectory distillation & few-shot learning
   ],
   controllers: [LearningMetricsController],
   providers: [
