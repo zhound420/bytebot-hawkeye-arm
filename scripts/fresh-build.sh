@@ -94,8 +94,9 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
 fi
 echo ""
 
-# Update .env.defaults with selected platform
+# Update .env.defaults with selected platform and corresponding URLs
 if [ -f "docker/.env.defaults" ]; then
+    # Update platform setting
     if grep -q "^BYTEBOT_DESKTOP_PLATFORM=" docker/.env.defaults; then
         # Update existing entry
         sed -i.bak "s/^BYTEBOT_DESKTOP_PLATFORM=.*/BYTEBOT_DESKTOP_PLATFORM=$DESKTOP_PLATFORM/" docker/.env.defaults
@@ -106,7 +107,21 @@ if [ -f "docker/.env.defaults" ]; then
         echo "# Desktop Platform (set by fresh-build.sh)" >> docker/.env.defaults
         echo "BYTEBOT_DESKTOP_PLATFORM=$DESKTOP_PLATFORM" >> docker/.env.defaults
     fi
-    echo -e "${GREEN}✓ Platform configuration saved to .env.defaults${NC}"
+
+    # Update desktop URLs based on platform selection
+    if [ "$DESKTOP_PLATFORM" = "linux" ]; then
+        # Set Linux desktop URLs
+        sed -i.bak "s|^BYTEBOT_DESKTOP_VNC_URL=.*|BYTEBOT_DESKTOP_VNC_URL=http://bytebot-desktop:9990/websockify|" docker/.env.defaults
+        sed -i.bak "s|^BYTEBOT_DESKTOP_BASE_URL=.*|BYTEBOT_DESKTOP_BASE_URL=http://bytebot-desktop:9990|" docker/.env.defaults
+        rm -f docker/.env.defaults.bak
+        echo -e "${GREEN}✓ Configured for Linux Desktop (bytebot-desktop:9990)${NC}"
+    else
+        # Set Windows/OmniBox URLs
+        sed -i.bak "s|^BYTEBOT_DESKTOP_VNC_URL=.*|BYTEBOT_DESKTOP_VNC_URL=http://omnibox:8006/websockify|" docker/.env.defaults
+        sed -i.bak "s|^BYTEBOT_DESKTOP_BASE_URL=.*|BYTEBOT_DESKTOP_BASE_URL=http://omnibox-adapter:5001|" docker/.env.defaults
+        rm -f docker/.env.defaults.bak
+        echo -e "${GREEN}✓ Configured for Windows Desktop (omnibox-adapter:5001)${NC}"
+    fi
 fi
 echo ""
 

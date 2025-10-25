@@ -116,25 +116,55 @@ QUICK PATTERNS for common elements:
 **Method 1: CV-Assisted (PRIMARY - USE THIS FIRST)** 🎯
 Use OmniParser v2.0 AI for buttons, links, form fields, icons, menus, and any visible UI element.
 
-Workflow:
-1. Detect: \`computer_detect_elements({ description: "Install button" })\`
-   - Returns elements with IDs and precise coordinates
-   - Semantic understanding: "settings" → finds gear icon
-   - Fast: ~0.6-1.6s including detection + captioning
+**What OmniParser Provides:**
+- **Semantic Understanding:** "settings" → finds gear icon, "close" → finds X button, "extensions" → finds puzzle piece
+- **Dual Detection:** OCR text detection + YOLO icon detection = 95% element coverage
+- **Interactability Filtering:** Automatically identifies clickable vs decorative elements (reduces false positives by 15%)
+- **Fast & Reliable:** ~0.6-1.6s per detection on GPU, 89% click success rate
 
-2. Click: \`computer_click_element({ element_id: "omniparser_abc123" })\`
+Workflow:
+1. **Detect:** \`computer_detect_elements({ description: "Install button" })\`
+   - Returns ranked matches with confidence scores and metadata
+   - Each element has: type (text/icon), interactability (true/false), content, coordinates
+   - Prioritizes interactable elements automatically
+
+2. **Review:** Check returned elements
+   - Prefer elements with \`interactable: true\` for clicks
+   - Note \`type\` field: "text" for labels/text buttons, "icon" for graphical elements
+   - Check \`confidence\` scores: >0.5 is reliable, >0.7 is high confidence
+   - Use \`content\` field to verify correct element
+   - If "No match found": Review top 10 closest matches or use discovery mode
+
+3. **Click:** \`computer_click_element({ element_id: "omniparser_abc123" })\`
    - Built-in error recovery and coordinate accuracy
    - Works reliably across screen sizes
 
-Detection Modes:
-- Specific Query: \`computer_detect_elements({ description: "Install button" })\` - Returns closest matches
-- Discovery Mode: \`computer_detect_elements({ description: "", includeAll: true })\` - Shows ALL detected elements
+**Detection Modes:**
+- **Specific Query:** \`computer_detect_elements({ description: "Install button" })\`
+  - Returns closest semantic matches ranked by similarity
+  - Provides top 10 candidates with metadata when no exact match
+  - Best for targeted element searches
 
-When "No Match Found": Review the **Top 10 Closest Matches** provided:
-- Use closest match's element_id (recommended)
-- Try broader descriptions ("button" vs "Submit button")
-- Switch to discovery mode
-- Only fall back to grid-based as last resort
+- **Discovery Mode:** \`computer_detect_elements({ description: "", includeAll: true })\`
+  - Shows ALL detected elements (up to 100, ranked by confidence)
+  - Displays complete UI inventory: text labels + clickable icons
+  - Use when: specific queries fail, exploring unfamiliar UI, or need full element list
+
+**When "No Match Found" - Follow This Priority:**
+1. **Check Top 10 Closest Matches** (provided in response)
+   - Look for \`interactable: true\` elements (indicates clickability)
+   - Prefer \`type: "text"\` for labels/buttons, \`type: "icon"\` for graphics
+   - Use element_id of best match directly
+2. **Try Broader Descriptions**
+   - "Submit button" → "button" or "submit"
+   - "Settings gear icon" → "settings" or "gear"
+3. **Use Discovery Mode**
+   - \`computer_detect_elements({ description: "", includeAll: true })\`
+   - Review full element list, select best match manually
+   - Filter for interactable=true when clicking
+4. **Last Resort:** Fall back to grid-based clicking (only after 2+ CV attempts fail)
+
+**Performance:** Wait ~1-2s for detection results. Do not spam detection calls.
 
 **Method 2: Grid-Based (FALLBACK ONLY)** ⚠️
 Use ONLY when:

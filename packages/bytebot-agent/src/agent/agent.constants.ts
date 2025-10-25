@@ -109,21 +109,45 @@ Use OmniParser AI computer vision for buttons, links, form fields, icons, menus,
 
 **Detection Modes:**
 - **Specific Query**: computer_detect_elements({ description: "Install button" })
-  - Returns closest matching elements with similarity scores
-  - AI semantic matching: "extensions icon" finds puzzle piece, "settings" finds gear
-  - Provides top 10 candidates when no exact match
+  - Returns closest matching elements ranked by semantic similarity
+  - AI understands function: "settings" → gear icon, "close" → X button, "extensions" → puzzle piece
+  - **Prioritizes interactable elements** (automatically filters out decorative graphics)
+  - **Combines OCR + icon detection** for comprehensive coverage (95% element detection)
+  - Provides top 10 candidates with metadata when no exact match
 
 - **Discovery Mode**: computer_detect_elements({ description: "", includeAll: true })
-  - Returns ALL detected elements (top 20 by confidence)
-  - Useful for exploring unfamiliar UIs or when specific queries fail
-  - Shows complete UI inventory with coordinates and descriptions
+  - Returns ALL detected elements (up to 100, ranked by confidence)
+  - Shows both text labels (OCR) and clickable icons (YOLO)
+  - Each element includes: type (text/icon), confidence, interactability, content
+  - **Use when:**
+    - Specific queries return "No match found"
+    - Exploring unfamiliar UI for the first time
+    - Need to see all available targets in a region
+    - Want to verify what elements are actually detectable
+
+**Using Discovery Mode Effectively:**
+1. Call computer_detect_elements({ description: "", includeAll: true })
+2. Review element list in response: note types (text vs icon) and interactability flags
+3. Choose most appropriate element_id (prefer interactable=true for clicks)
+4. Click using computer_click_element({ element_id: "chosen_id" })
 
 **Handling "No Match Found":**
-When detection returns "No exact match", review the **Top 10 Closest Matches** provided:
-- Use the closest match's element_id directly (recommended)
-- Try broader descriptions (e.g., "button" instead of "Submit button")
-- Switch to discovery mode to see all available elements
-- Only fall back to grid-based as last resort
+When detection returns "No exact match", follow this priority:
+1. **Review Top 10 Closest Matches** - Check if closest match is acceptable
+   - Look for \`interactable: true\` elements (indicates clickability)
+   - Prefer \`type: "text"\` for labels/text buttons, \`type: "icon"\` for graphical elements
+   - Check \`confidence\` scores (higher is more reliable, typically >0.5 is good)
+   - Use element_id of best match directly
+2. **Broaden Description** - Try more general or alternative terms
+   - "Submit button" → "button" or "submit"
+   - "Settings gear icon" → "settings" or "gear" or "configuration"
+   - "Close X" → "close" or "dismiss"
+3. **Switch to Discovery Mode** - computer_detect_elements({ description: "", includeAll: true })
+   - Review all elements returned, manually select best match by analyzing metadata
+   - Filter mentally for interactable=true if clicking
+4. **Last Resort** - Fall back to grid-based clicking (only after 2+ CV attempts fail)
+
+**Performance Note:** Detection takes ~0.6-1.6s depending on GPU. Wait for results before retrying. Do not spam detection calls.
 
 **Why CV-First:**
 - ✅ 89% success rate vs 60% with manual grid clicking
@@ -131,6 +155,22 @@ When detection returns "No exact match", review the **Top 10 Closest Matches** p
 - ✅ Automatic coordinate accuracy across screen sizes
 - ✅ Built-in retry and error recovery
 - ✅ Works with dynamically positioned elements
+
+**Element Metadata (Advanced):**
+Detection results include rich metadata for each element to help you choose the best target:
+- \`type\`: "text" (OCR-detected label/text button) or "icon" (YOLO-detected graphical element)
+- \`interactable\`: Boolean indicating clickability prediction (prefer true for interactive actions)
+- \`confidence\`: 0.0-1.0 score indicating detection reliability (>0.5 is generally reliable, >0.7 is high confidence)
+- \`content\`: OCR text content or Florence-2 AI caption describing the element's function
+- \`center\`: [x, y] coordinates of element center point
+- \`bbox\`: [x, y, width, height] bounding box of full element area
+
+**Using Metadata Effectively:**
+- Prioritize elements with \`interactable: true\` when you need to click something
+- Prefer higher \`confidence\` elements when multiple similar matches exist
+- Use \`content\` field to verify you've found the right element before clicking
+- Check \`type\` to understand detection method: "text" for readable labels, "icon" for graphics/symbols
+- Consider \`bbox\` size: very small elements might be decorative, larger ones more likely interactive
 
 #### Method 2: Grid-Based (FALLBACK ONLY) ⚠️
 Use ONLY when Method 1 has failed or for these specific cases:
