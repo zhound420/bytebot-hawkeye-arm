@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, Inject, forwardRef } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../prisma/prisma.service';
 import {
@@ -7,6 +7,7 @@ import {
   TrajectoryData,
   TrajectoryMetrics,
 } from './types/trajectory.types';
+import { TrajectorySearchService } from './trajectory-search.service';
 
 /**
  * Records task execution trajectories for learning and analysis
@@ -31,6 +32,8 @@ export class TrajectoryRecorderService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly configService: ConfigService,
+    @Inject(forwardRef(() => TrajectorySearchService))
+    private readonly trajectorySearch: TrajectorySearchService,
   ) {
     this.config = {
       enabled: this.configService.get<boolean>(
@@ -221,7 +224,7 @@ export class TrajectoryRecorderService {
     trajectory: TrajectoryData,
     qualityScore: number | null,
   ): Promise<void> {
-    await this.prisma.taskTrajectory.create({
+    const savedTrajectory = await this.prisma.taskTrajectory.create({
       data: {
         taskId: trajectory.taskId,
         modelProvider: trajectory.modelProvider,
@@ -252,7 +255,22 @@ export class TrajectoryRecorderService {
           })),
         },
       },
+      include: {
+        task: {
+          select: {
+            description: true,
+          },
+        },
+      },
     });
+
+    // Generate and store embedding for semantic search
+    if (savedTrajectory.task?.description) {
+      await this.trajectorySearch.storeEmbedding(
+        savedTrajectory.id,
+        savedTrajectory.task.description,
+      );
+    }
   }
 
   /**

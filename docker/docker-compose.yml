@@ -54,7 +54,7 @@ services:
     env_file:
       - .env.defaults
       - .env
-    image: ${BYTEBOT_POSTGRES_IMAGE:-public.ecr.aws/docker/library/postgres:16-alpine}
+    image: ${BYTEBOT_POSTGRES_IMAGE:-pgvector/pgvector:pg16}
     container_name: bytebot-postgres
     restart: unless-stopped
     ports:
