@@ -139,7 +139,7 @@ services:
       dockerfile: packages/bytebot-ui/Dockerfile
       args:
         - BYTEBOT_AGENT_BASE_URL=${BYTEBOT_AGENT_BASE_URL:-http://bytebot-agent:9991}
-        - BYTEBOT_DESKTOP_VNC_URL=${BYTEBOT_DESKTOP_VNC_URL:-http://bytebot-desktop:9990/websockify}
+        - BYTEBOT_DESKTOP_VNC_URL=${BYTEBOT_DESKTOP_VNC_URL}
     image: ${BYTEBOT_UI_IMAGE:-bytebot-ui:local}
     container_name: bytebot-ui
     restart: unless-stopped
@@ -148,7 +148,7 @@ services:
     environment:
       - NODE_ENV=production
       - BYTEBOT_AGENT_BASE_URL=${BYTEBOT_AGENT_BASE_URL:-http://bytebot-agent:9991}
-      - BYTEBOT_DESKTOP_VNC_URL=${BYTEBOT_DESKTOP_VNC_URL:-http://bytebot-desktop:9990/websockify}
+      - BYTEBOT_DESKTOP_VNC_URL=${BYTEBOT_DESKTOP_VNC_URL}
       - NEXT_PUBLIC_PROGRESS_WS_PORT=${NEXT_PUBLIC_PROGRESS_WS_PORT:-8081}
     depends_on:
       - bytebot-agent

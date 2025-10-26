@@ -8,6 +8,14 @@ BLUE='\033[0;34m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
+# Load environment defaults for Docker Compose variable substitution
+# This exports variables so ${VAR} syntax in docker-compose.yml works
+if [ -f "docker/.env.defaults" ]; then
+    set -a  # Auto-export all variables
+    source docker/.env.defaults
+    set +a  # Stop auto-exporting
+fi
+
 ARCH=$(uname -m)
 OS=$(uname -s)
 

@@ -13,6 +13,14 @@ echo -e "${BLUE}   Bytebot Hawkeye - Fresh Build${NC}"
 echo -e "${BLUE}================================================${NC}"
 echo ""
 
+# Load environment defaults for Docker Compose variable substitution
+# This exports variables so ${VAR} syntax in docker-compose.yml works
+if [ -f "docker/.env.defaults" ]; then
+    set -a  # Auto-export all variables
+    source docker/.env.defaults
+    set +a  # Stop auto-exporting
+fi
+
 # Detect platform with enhanced Windows/WSL support
 ARCH=$(uname -m)
 OS=$(uname -s)
