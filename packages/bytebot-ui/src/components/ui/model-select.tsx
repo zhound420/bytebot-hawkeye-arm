@@ -39,7 +39,7 @@ export function ModelSelect({
 
   return (
     <Select
-      value={selectedModel?.name}
+      value={selectedModel?.name ?? ""}
       onValueChange={(val) =>
         onModelChange(models.find((m) => m.name === val) || null)
       }

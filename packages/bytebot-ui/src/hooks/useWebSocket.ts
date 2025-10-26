@@ -1,6 +1,6 @@
-import { useEffect, useRef, useCallback } from "react";
-import { io, Socket } from "socket.io-client";
+import { useEffect, useCallback } from "react";
 import { Message, Task } from "@/types";
+import { useWebSocketContext } from "@/contexts/WebSocketContext";
 
 interface UseWebSocketProps {
   onTaskUpdate?: (task: Task) => void;
@@ -15,99 +15,58 @@ export function useWebSocket({
   onTaskCreated,
   onTaskDeleted,
 }: UseWebSocketProps = {}) {
-  const socketRef = useRef<Socket | null>(null);
-  const currentTaskIdRef = useRef<string | null>(null);
+  const { socket, isConnected, joinTask, leaveTask, on, off } = useWebSocketContext();
 
-  const connect = useCallback(() => {
-    if (socketRef.current?.connected) {
-      return socketRef.current;
-    }
+  // Register event handlers
+  useEffect(() => {
+    if (!socket) return;
 
-    // Connect to the WebSocket server
-    const socket = io({
-      path: "/api/proxy/tasks",
-      transports: ["websocket"],
-      autoConnect: true,
-      reconnection: true,
-      reconnectionAttempts: 5,
-      reconnectionDelay: 1000,
-    });
-
-    socket.on("connect", () => {
-      console.log("Connected to WebSocket server");
-    });
-
-    socket.on("disconnect", () => {
-      console.log("Disconnected from WebSocket server");
-    });
-
-    socket.on("task_updated", (task: Task) => {
+    const handleTaskUpdate = (task: Task) => {
       console.log("Task updated:", task);
       onTaskUpdate?.(task);
-    });
+    };
 
-    socket.on("new_message", (message: Message) => {
+    const handleNewMessage = (message: Message) => {
       console.log("New message:", message);
       onNewMessage?.(message);
-    });
+    };
 
-    socket.on("task_created", (task: Task) => {
+    const handleTaskCreated = (task: Task) => {
       console.log("Task created:", task);
       onTaskCreated?.(task);
-    });
+    };
 
-    socket.on("task_deleted", (taskId: string) => {
+    const handleTaskDeleted = (taskId: string) => {
       console.log("Task deleted:", taskId);
       onTaskDeleted?.(taskId);
-    });
+    };
 
-    socketRef.current = socket;
-    return socket;
-  }, [onTaskUpdate, onNewMessage, onTaskCreated, onTaskDeleted]);
+    // Register handlers
+    on("task_updated", handleTaskUpdate);
+    on("new_message", handleNewMessage);
+    on("task_created", handleTaskCreated);
+    on("task_deleted", handleTaskDeleted);
 
-  const joinTask = useCallback(
-    (taskId: string) => {
-      const socket = socketRef.current || connect();
-      if (currentTaskIdRef.current) {
-        socket.emit("leave_task", currentTaskIdRef.current);
-      }
-      socket.emit("join_task", taskId);
-      currentTaskIdRef.current = taskId;
-      console.log(`Joined task room: ${taskId}`);
-    },
-    [connect],
-  );
-
-  const leaveTask = useCallback(() => {
-    const socket = socketRef.current;
-    if (socket && currentTaskIdRef.current) {
-      socket.emit("leave_task", currentTaskIdRef.current);
-      console.log(`Left task room: ${currentTaskIdRef.current}`);
-      currentTaskIdRef.current = null;
-    }
-  }, []);
+    // Cleanup handlers on unmount
+    return () => {
+      off("task_updated", handleTaskUpdate);
+      off("new_message", handleNewMessage);
+      off("task_created", handleTaskCreated);
+      off("task_deleted", handleTaskDeleted);
+    };
+  }, [socket, on, off, onTaskUpdate, onNewMessage, onTaskCreated, onTaskDeleted]);
 
   const disconnect = useCallback(() => {
-    if (socketRef.current) {
-      socketRef.current.disconnect();
-      socketRef.current = null;
-      currentTaskIdRef.current = null;
-    }
-  }, []);
-
-  // Initialize connection on mount
-  useEffect(() => {
-    connect();
-    return () => {
-      disconnect();
-    };
-  }, [connect, disconnect]);
+    // Note: We don't actually disconnect the singleton socket here
+    // Just leave the current task room
+    leaveTask();
+  }, [leaveTask]);
 
   return {
-    socket: socketRef.current,
+    socket,
     joinTask,
     leaveTask,
     disconnect,
-    isConnected: socketRef.current?.connected || false,
+    isConnected,
   };
 }
