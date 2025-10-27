@@ -186,7 +186,7 @@ services:
       - "8006:8006"  # Web viewer
       - "3389:3389"  # RDP
       - "5000:5000"  # Computer Use API
-      - "5900:5900"  # VNC
+      - "5901:5900"  # VNC (changed to 5901 to avoid conflict with host QEMU VM)
     environment:
       # VERSION removed - using custom Tiny11 ISO instead
       - RAM_SIZE=${OMNIBOX_RAM_SIZE:-8G}
