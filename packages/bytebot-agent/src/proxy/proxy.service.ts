@@ -154,15 +154,16 @@ export class ProxyService implements BytebotAgentService {
   }
 
   /**
-   * Strip data URI prefix from base64 image data if present
-   * LiteLLM expects raw base64 without data:image/...;base64, prefix
+   * Ensure data URI prefix is present for base64 image data
+   * OpenRouter/LiteLLM require data:image/...;base64, prefix
    */
-  private stripDataURIPrefix(base64Data: string): string {
-    if (base64Data.includes(',')) {
-      // Has data URI prefix like "data:image/png;base64,XXX"
-      return base64Data.split(',')[1];
+  private ensureDataURIPrefix(base64Data: string): string {
+    // If already has data URI prefix, return as-is
+    if (base64Data.startsWith('data:image/')) {
+      return base64Data;
     }
-    return base64Data;
+    // Add PNG data URI prefix (OmniBox/bytebotd send raw PNG base64)
+    return `data:image/png;base64,${base64Data}`;
   }
 
   /**
@@ -203,16 +204,16 @@ export class ProxyService implements BytebotAgentService {
               )}`,
             });
           } else if (isImageContentBlock(block)) {
-            // OpenAI format with raw base64 (LiteLLM requirement)
+            // OpenRouter/LiteLLM format with data URI prefix
             const cleanBase64 = block.source.data.replace(/\s/g, '');
-            const rawBase64 = this.stripDataURIPrefix(cleanBase64);
+            const dataUri = this.ensureDataURIPrefix(cleanBase64);
             chatMessages.push({
               role: 'user',
               content: [
                 {
                   type: 'image_url',
                   image_url: {
-                    url: rawBase64,
+                    url: dataUri,
                     detail: 'high',
                   },
                 },
@@ -271,16 +272,16 @@ export class ProxyService implements BytebotAgentService {
                 break;
               case MessageContentType.Image: {
                 const imageBlock = block as ImageContentBlock;
-                // OpenAI format with raw base64 (LiteLLM requirement)
+                // OpenRouter/LiteLLM format with data URI prefix
                 const cleanBase64 = imageBlock.source.data.replace(/\s/g, '');
-                const rawBase64 = this.stripDataURIPrefix(cleanBase64);
+                const dataUri = this.ensureDataURIPrefix(cleanBase64);
                 chatMessages.push({
                   role: 'user',
                   content: [
                     {
                       type: 'image_url',
                       image_url: {
-                        url: rawBase64,
+                        url: dataUri,
                         detail: 'high',
                       },
                     },
@@ -319,18 +320,18 @@ export class ProxyService implements BytebotAgentService {
                 }
                 // 2) After tool responses, provide the actual screenshot(s) as a user image message
                 if (pendingImages.length > 0) {
-                  // OpenAI format with raw base64 (LiteLLM requirement)
+                  // OpenRouter/LiteLLM format with data URI prefix
                   chatMessages.push({
                     role: 'user',
                     content: [
                       { type: 'text', text: 'Screenshot' },
                       ...pendingImages.map((img) => {
                         const cleanBase64 = img.data.replace(/\s/g, '');
-                        const rawBase64 = this.stripDataURIPrefix(cleanBase64);
+                        const dataUri = this.ensureDataURIPrefix(cleanBase64);
                         return {
                           type: 'image_url',
                           image_url: {
-                            url: rawBase64,
+                            url: dataUri,
                             detail: 'high',
                           },
                         } as ChatCompletionContentPart;
