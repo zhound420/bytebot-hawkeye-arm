@@ -155,15 +155,29 @@ done
 log_info "Updating litellm-config.yaml..."
 
 # Remove old LMStudio auto-generated entries (between markers)
-sed -i.tmp '/# LMStudio VLM models (auto-discovered)/,/^litellm_settings:/{ /^litellm_settings:/!d; }' "$CONFIG_FILE"
+# Strategy: Delete from first LMStudio marker to next section (Ollama) or litellm_settings
+if grep -q "# Ollama VLM models" "$CONFIG_FILE"; then
+    # Ollama section exists, delete from LMStudio to Ollama (keep Ollama line)
+    sed -i.tmp '/# LMStudio VLM models/,/# Ollama VLM models/{/# Ollama VLM models/!d;}' "$CONFIG_FILE"
+else
+    # No Ollama section, delete from LMStudio to litellm_settings (keep litellm_settings line)
+    sed -i.tmp '/# LMStudio VLM models/,/^litellm_settings:/{/^litellm_settings:/!d;}' "$CONFIG_FILE"
+fi
 
 # Also remove old manual LMStudio entries if they exist
-sed -i.tmp '/# Add local models via LMStudio/,/^litellm_settings:/{ /^litellm_settings:/!d; }' "$CONFIG_FILE"
+sed -i.tmp '/# Add local models via LMStudio/,/^litellm_settings:/{/^litellm_settings:/!d;}' "$CONFIG_FILE"
 
-# Insert new models before litellm_settings
+# Insert new models before Ollama section (if exists) or litellm_settings
 TIMESTAMP=$(date +"%Y-%m-%d %H:%M:%S")
-sed -i.tmp '/^litellm_settings:/i\  # LMStudio VLM models (auto-discovered on '"${TIMESTAMP}"')' "$CONFIG_FILE"
-sed -i.tmp "/# LMStudio VLM models/r $TEMP_MODELS" "$CONFIG_FILE"
+if grep -q "# Ollama VLM models" "$CONFIG_FILE"; then
+    # Insert before Ollama section
+    sed -i.tmp '/# Ollama VLM models/i\  # LMStudio VLM models (auto-discovered on '"${TIMESTAMP}"')' "$CONFIG_FILE"
+    sed -i.tmp "/# LMStudio VLM models (auto-discovered on ${TIMESTAMP})/r $TEMP_MODELS" "$CONFIG_FILE"
+else
+    # Insert before litellm_settings
+    sed -i.tmp '/^litellm_settings:/i\  # LMStudio VLM models (auto-discovered on '"${TIMESTAMP}"')' "$CONFIG_FILE"
+    sed -i.tmp "/# LMStudio VLM models (auto-discovered on ${TIMESTAMP})/r $TEMP_MODELS" "$CONFIG_FILE"
+fi
 
 rm -f "${CONFIG_FILE}.tmp" "$TEMP_MODELS"
 
