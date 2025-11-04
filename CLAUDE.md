@@ -12,6 +12,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - All OpenCV native bindings and build complexity
 - Template matching, feature detection, contour detection services
 - OpenCV preprocessing pipelines (CLAHE, morphology, filters)
+- Canvas dependency (unused after OpenCV removal, eliminated to fix Windows builds)
 
 **Benefits:**
 - ✅ Simpler installation (no native bindings to compile)
