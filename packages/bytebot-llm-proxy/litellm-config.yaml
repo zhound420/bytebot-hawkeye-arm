@@ -29902,24 +29902,10 @@ model_list:
       supports_function_calling: true
     model_info:
       supports_vision: true
-  # Ollama VLM models (manually added 2025-10-26)
-  - model_name: local-ollama-qwen2-5vl-32b
+  # Ollama VLM models (updated 2025-11-04 for new server)
+  - model_name: local-ollama-qwen3-vl-32b
     litellm_params:
-      model: ollama_chat/qwen2.5vl:32b
-      api_base: http://192.168.4.126:11434
-      supports_function_calling: true
-    model_info:
-      supports_vision: true
-  - model_name: local-ollama-qwen3-vl-235b-cloud
-    litellm_params:
-      model: ollama_chat/qwen3-vl:235b-cloud
-      api_base: http://192.168.4.126:11434
-      supports_function_calling: true
-    model_info:
-      supports_vision: true
-  - model_name: local-ollama-llama3-2-latest
-    litellm_params:
-      model: ollama_chat/llama3.2:latest
+      model: ollama_chat/qwen3-vl:32b
       api_base: http://192.168.4.126:11434
       supports_function_calling: true
     model_info:
