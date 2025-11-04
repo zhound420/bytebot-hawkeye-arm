@@ -56,6 +56,102 @@ This fork adds precision tooling on top of upstream Bytebot:
 - **Universal element detection**: OmniParser v2.0 (YOLOv8 + Florence-2) + Tesseract.js OCR
 - **Coordinate telemetry**: Accuracy metrics and adaptive calibration
 - **Grid overlay guidance**: Always-on coordinate grids with debug overlays
+- **Multi-platform desktop support**: Automatic platform detection with health-check based routing
+
+## Multi-Platform Desktop Support
+
+Bytebot Hawkeye supports multiple desktop environments:
+
+### Supported Platforms
+
+| Platform | Service | Port | Technology | Status |
+|----------|---------|------|------------|--------|
+| **Linux Desktop** | `bytebot-desktop` | 9990 | Docker + X11/XFCE + noVNC | ✅ Production |
+| **Windows 11 Desktop** | `omnibox` + `omnibox-adapter` | 5001 | KVM + Tiny11 + PyAutoGUI | ✅ Production |
+| **macOS Host** | (uses Linux desktop in Docker) | N/A | Cannot control native macOS | ⚠️ Limited |
+
+### Automatic Platform Detection
+
+The system includes two levels of platform handling:
+
+**Level 1: Startup Script (`./scripts/start.sh`)**
+- Auto-detects host OS (Linux, macOS, Windows WSL)
+- Checks for KVM support (needed for Windows VM)
+- Sets `COMPOSE_PROFILES` environment variable
+- Configures `BYTEBOT_DESKTOP_PLATFORM` and `BYTEBOT_DESKTOP_BASE_URL`
+- Starts Docker Compose with the appropriate profile
+
+**Level 2: Runtime Health-Check Routing (`agent.computer-use.ts`)**
+- Agent performs health checks on first computer use action
+- Tests both Linux (`http://bytebot-desktop:9990`) and Windows (`http://omnibox-adapter:5001`) endpoints
+- Automatically routes to the available desktop service
+- Logs detection results for debugging
+- Falls back to platform preference if both unavailable
+
+### Configuration Precedence
+
+Desktop URL selection follows this priority order:
+1. **Explicit override**: `BYTEBOT_DESKTOP_BASE_URL` environment variable (highest)
+2. **Auto-detection**: Health checks both Linux/Windows endpoints
+3. **Platform preference**: Uses `BYTEBOT_DESKTOP_PLATFORM` setting
+4. **Default fallback**: Linux desktop (`http://bytebot-desktop:9990`)
+
+### Environment Variables
+
+```bash
+# Platform selection
+BYTEBOT_DESKTOP_PLATFORM=linux          # 'linux' or 'windows'
+
+# Desktop service URLs
+BYTEBOT_DESKTOP_LINUX_URL=http://bytebot-desktop:9990
+BYTEBOT_DESKTOP_WINDOWS_URL=http://omnibox-adapter:5001
+BYTEBOT_DESKTOP_BASE_URL=http://bytebot-desktop:9990  # Auto-selected based on platform
+
+# Docker Compose profile
+COMPOSE_PROFILES=linux                   # 'linux' or 'omnibox'
+```
+
+### Example Usage
+
+**Automatic (Recommended):**
+```bash
+./scripts/start.sh
+# Detects platform, prompts if Windows is available, starts appropriate services
+```
+
+**Force Linux Desktop:**
+```bash
+BYTEBOT_FORCE_PLATFORM=linux ./scripts/start.sh
+```
+
+**Force Windows Desktop:**
+```bash
+BYTEBOT_FORCE_PLATFORM=windows ./scripts/start.sh
+# Requires: KVM support + Tiny11 ISO (~3GB)
+```
+
+**Manual Docker Compose:**
+```bash
+# Linux desktop
+docker compose -f docker/docker-compose.yml --profile linux up -d
+
+# Windows desktop
+docker compose -f docker/docker-compose.yml --profile omnibox up -d
+```
+
+### Troubleshooting
+
+**Issue: "Cannot find module omnibox-adapter"**
+- Cause: Windows profile not started, but agent configured for Windows
+- Solution: Restart with `BYTEBOT_FORCE_PLATFORM=linux ./scripts/start.sh`
+
+**Issue: "Health check failed for both desktops"**
+- Cause: Desktop services not running or not healthy
+- Solution: Check `docker ps` and `docker logs bytebot-desktop`
+
+**Issue: "Windows VM not booting"**
+- Cause: Missing KVM support or Tiny11 ISO
+- Solution: Check `/dev/kvm` exists and ISO is at `~/.cache/bytebot/iso/tiny11.iso`
 
 ## Quick Start
 
@@ -72,8 +168,24 @@ cd ../bytebot-cv && npm install && npm run build
 # 3. Setup OmniParser (auto-detects Apple Silicon vs x86_64/NVIDIA)
 ./scripts/setup-omniparser.sh
 
-# 4. Start stack
-./scripts/start-stack.sh
+# 4. Start stack (auto-detects Linux/Windows platform)
+./scripts/start.sh
+```
+
+**The new `start.sh` script automatically:**
+- Detects your host platform (Linux, macOS, Windows)
+- Checks for KVM support (needed for Windows desktop VM)
+- Selects the appropriate Docker Compose profile
+- Configures environment variables
+- Starts the stack with the correct desktop service
+
+**Manual platform selection:**
+```bash
+# Force Linux desktop (default, recommended)
+BYTEBOT_FORCE_PLATFORM=linux ./scripts/start.sh
+
+# Force Windows desktop (requires KVM + Tiny11 ISO)
+BYTEBOT_FORCE_PLATFORM=windows ./scripts/start.sh
 ```
 
 ### What Happens Automatically

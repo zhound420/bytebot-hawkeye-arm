@@ -61,10 +61,93 @@ const BYTEBOT_DESKTOP_PLATFORM = process.env.BYTEBOT_DESKTOP_PLATFORM || 'linux'
 const BYTEBOT_DESKTOP_LINUX_URL = process.env.BYTEBOT_DESKTOP_LINUX_URL || 'http://bytebot-desktop:9990';
 const BYTEBOT_DESKTOP_WINDOWS_URL = process.env.BYTEBOT_DESKTOP_WINDOWS_URL || 'http://omnibox-adapter:5001';
 
-// Select desktop URL based on platform
-const BYTEBOT_DESKTOP_BASE_URL = BYTEBOT_DESKTOP_PLATFORM === 'windows'
-  ? BYTEBOT_DESKTOP_WINDOWS_URL
-  : (process.env.BYTEBOT_DESKTOP_BASE_URL || BYTEBOT_DESKTOP_LINUX_URL);
+// Dynamic desktop URL detection with health checks
+let BYTEBOT_DESKTOP_BASE_URL: string | null = null;
+let desktopUrlDetectionPromise: Promise<string> | null = null;
+
+/**
+ * Health check a desktop service URL
+ * Uses screen_info action as a lightweight health check
+ */
+async function checkDesktopHealth(url: string, timeout = 2000): Promise<boolean> {
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+    const response = await fetch(`${url}/computer-use`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'screen_info' }),
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeoutId);
+    return response.ok;
+  } catch (error) {
+    return false;
+  }
+}
+
+/**
+ * Detect and return the available desktop service URL
+ * Tests both Linux and Windows endpoints and returns the first healthy one
+ */
+async function detectDesktopUrl(): Promise<string> {
+  const logger = new Logger('DesktopDetection');
+
+  // If explicitly set via BYTEBOT_DESKTOP_BASE_URL, use that
+  if (process.env.BYTEBOT_DESKTOP_BASE_URL) {
+    logger.log(`Using explicitly configured desktop URL: ${process.env.BYTEBOT_DESKTOP_BASE_URL}`);
+    return process.env.BYTEBOT_DESKTOP_BASE_URL;
+  }
+
+  // If platform is explicitly set, prefer that platform's URL
+  const platformPreference = BYTEBOT_DESKTOP_PLATFORM === 'windows'
+    ? BYTEBOT_DESKTOP_WINDOWS_URL
+    : BYTEBOT_DESKTOP_LINUX_URL;
+
+  const alternativeUrl = BYTEBOT_DESKTOP_PLATFORM === 'windows'
+    ? BYTEBOT_DESKTOP_LINUX_URL
+    : BYTEBOT_DESKTOP_WINDOWS_URL;
+
+  logger.log(`Detecting desktop service (platform preference: ${BYTEBOT_DESKTOP_PLATFORM})...`);
+
+  // Check preferred platform first
+  logger.debug(`Checking ${BYTEBOT_DESKTOP_PLATFORM} desktop at ${platformPreference}...`);
+  if (await checkDesktopHealth(platformPreference)) {
+    logger.log(`✓ Detected ${BYTEBOT_DESKTOP_PLATFORM} desktop at ${platformPreference}`);
+    return platformPreference;
+  }
+
+  // Check alternative platform
+  const altPlatform = BYTEBOT_DESKTOP_PLATFORM === 'windows' ? 'linux' : 'windows';
+  logger.debug(`Checking ${altPlatform} desktop at ${alternativeUrl}...`);
+  if (await checkDesktopHealth(alternativeUrl)) {
+    logger.log(`✓ Detected ${altPlatform} desktop at ${alternativeUrl} (fallback)`);
+    return alternativeUrl;
+  }
+
+  // No healthy endpoint found, fallback to platform preference
+  logger.warn(`⚠ No healthy desktop service detected, using ${BYTEBOT_DESKTOP_PLATFORM} default: ${platformPreference}`);
+  return platformPreference;
+}
+
+/**
+ * Get the desktop base URL, detecting it on first call
+ */
+async function getDesktopBaseUrl(): Promise<string> {
+  if (BYTEBOT_DESKTOP_BASE_URL) {
+    return BYTEBOT_DESKTOP_BASE_URL;
+  }
+
+  // Ensure only one detection happens even with concurrent calls
+  if (!desktopUrlDetectionPromise) {
+    desktopUrlDetectionPromise = detectDesktopUrl();
+  }
+
+  BYTEBOT_DESKTOP_BASE_URL = await desktopUrlDetectionPromise;
+  return BYTEBOT_DESKTOP_BASE_URL;
+}
 
 const BYTEBOT_LLM_PROXY_URL = process.env.BYTEBOT_LLM_PROXY_URL as
   | string
@@ -595,7 +678,9 @@ async function moveMouse(input: { coordinates: Coordinates }): Promise<void> {
   const { coordinates } = input;
 
   try {
-    await fetch(`${BYTEBOT_DESKTOP_BASE_URL}/computer-use`, {
+    const baseUrl = await getDesktopBaseUrl();
+
+    await fetch(`${baseUrl}/computer-use`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -616,7 +701,9 @@ async function traceMouse(input: {
   const { path, holdKeys } = input;
 
   try {
-    await fetch(`${BYTEBOT_DESKTOP_BASE_URL}/computer-use`, {
+    const baseUrl = await getDesktopBaseUrl();
+
+    await fetch(`${baseUrl}/computer-use`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -787,7 +874,8 @@ async function clickMouse(input: {
       : 1;
 
   try {
-    const response = await fetch(`${BYTEBOT_DESKTOP_BASE_URL}/computer-use`, {
+    const baseUrl = await getDesktopBaseUrl();
+    const response = await fetch(`${baseUrl}/computer-use`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -1109,7 +1197,9 @@ async function pressMouse(input: {
   const { coordinates, button, press } = input;
 
   try {
-    await fetch(`${BYTEBOT_DESKTOP_BASE_URL}/computer-use`, {
+    const baseUrl = await getDesktopBaseUrl();
+
+    await fetch(`${baseUrl}/computer-use`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -1133,7 +1223,9 @@ async function dragMouse(input: {
   const { path, button, holdKeys } = input;
 
   try {
-    await fetch(`${BYTEBOT_DESKTOP_BASE_URL}/computer-use`, {
+    const baseUrl = await getDesktopBaseUrl();
+
+    await fetch(`${baseUrl}/computer-use`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -1161,7 +1253,9 @@ async function scroll(input: {
   );
 
   try {
-    await fetch(`${BYTEBOT_DESKTOP_BASE_URL}/computer-use`, {
+    const baseUrl = await getDesktopBaseUrl();
+
+    await fetch(`${baseUrl}/computer-use`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -1186,7 +1280,9 @@ async function typeKeys(input: {
   console.log(`Typing keys: ${keys}`);
 
   try {
-    await fetch(`${BYTEBOT_DESKTOP_BASE_URL}/computer-use`, {
+    const baseUrl = await getDesktopBaseUrl();
+
+    await fetch(`${baseUrl}/computer-use`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -1209,7 +1305,9 @@ async function pressKeys(input: {
   console.log(`Pressing keys: ${keys}`);
 
   try {
-    await fetch(`${BYTEBOT_DESKTOP_BASE_URL}/computer-use`, {
+    const baseUrl = await getDesktopBaseUrl();
+
+    await fetch(`${baseUrl}/computer-use`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -1232,7 +1330,9 @@ async function typeText(input: {
   console.log(`Typing text: ${text}`);
 
   try {
-    await fetch(`${BYTEBOT_DESKTOP_BASE_URL}/computer-use`, {
+    const baseUrl = await getDesktopBaseUrl();
+
+    await fetch(`${baseUrl}/computer-use`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -1252,7 +1352,9 @@ async function pasteText(input: { text: string }): Promise<void> {
   console.log(`Pasting text: ${text}`);
 
   try {
-    await fetch(`${BYTEBOT_DESKTOP_BASE_URL}/computer-use`, {
+    const baseUrl = await getDesktopBaseUrl();
+
+    await fetch(`${baseUrl}/computer-use`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -1271,7 +1373,9 @@ async function wait(input: { duration: number }): Promise<void> {
   console.log(`Waiting for ${duration}ms`);
 
   try {
-    await fetch(`${BYTEBOT_DESKTOP_BASE_URL}/computer-use`, {
+    const baseUrl = await getDesktopBaseUrl();
+
+    await fetch(`${baseUrl}/computer-use`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -1289,7 +1393,8 @@ async function cursorPosition(): Promise<Coordinates> {
   console.log('Getting cursor position');
 
   try {
-    const response = await fetch(`${BYTEBOT_DESKTOP_BASE_URL}/computer-use`, {
+    const baseUrl = await getDesktopBaseUrl();
+    const response = await fetch(`${baseUrl}/computer-use`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -1311,7 +1416,8 @@ async function screenshot(
   console.log('Taking screenshot');
 
   try {
-    const response = await fetch(`${BYTEBOT_DESKTOP_BASE_URL}/computer-use`, {
+    const baseUrl = await getDesktopBaseUrl();
+    const response = await fetch(`${baseUrl}/computer-use`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -1347,7 +1453,8 @@ async function screenshot(
 async function screenInfo(): Promise<{ width: number; height: number }> {
   console.log('Getting screen info');
   try {
-    const response = await fetch(`${BYTEBOT_DESKTOP_BASE_URL}/computer-use`, {
+    const baseUrl = await getDesktopBaseUrl();
+    const response = await fetch(`${baseUrl}/computer-use`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ action: 'screen_info' }),
@@ -1385,7 +1492,8 @@ async function screenshotRegion(input: {
   console.log(`Taking focused screenshot for region: ${input.region}`);
 
   try {
-    const response = await fetch(`${BYTEBOT_DESKTOP_BASE_URL}/computer-use`, {
+    const baseUrl = await getDesktopBaseUrl();
+    const response = await fetch(`${baseUrl}/computer-use`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -1449,7 +1557,8 @@ async function screenshotCustomRegion(input: {
   );
 
   try {
-    const response = await fetch(`${BYTEBOT_DESKTOP_BASE_URL}/computer-use`, {
+    const baseUrl = await getDesktopBaseUrl();
+    const response = await fetch(`${baseUrl}/computer-use`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -1496,7 +1605,9 @@ async function application(input: { application: string }): Promise<void> {
   console.log(`Opening application: ${application}`);
 
   try {
-    await fetch(`${BYTEBOT_DESKTOP_BASE_URL}/computer-use`, {
+    const baseUrl = await getDesktopBaseUrl();
+
+    await fetch(`${baseUrl}/computer-use`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -1522,7 +1633,8 @@ async function readFile(input: { path: string }): Promise<{
   console.log(`Reading file: ${path}`);
 
   try {
-    const response = await fetch(`${BYTEBOT_DESKTOP_BASE_URL}/computer-use`, {
+    const baseUrl = await getDesktopBaseUrl();
+    const response = await fetch(`${baseUrl}/computer-use`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -1557,7 +1669,8 @@ export async function writeFile(input: {
     // Content is always base64 encoded
     const base64Data = content;
 
-    const response = await fetch(`${BYTEBOT_DESKTOP_BASE_URL}/computer-use`, {
+    const baseUrl = await getDesktopBaseUrl();
+    const response = await fetch(`${baseUrl}/computer-use`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

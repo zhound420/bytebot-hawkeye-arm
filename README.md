@@ -136,15 +136,31 @@ The setup script auto-detects your hardware and installs the optimal configurati
 
 ### Step 4: Start the Stack
 
-The start script will prompt you to choose a desktop platform:
+The new auto-detection script handles platform selection automatically:
 
 ```bash
-./scripts/start-stack.sh
+./scripts/start.sh
 ```
+
+**What happens automatically:**
+- Detects your host platform (Linux, macOS, Windows WSL)
+- Checks for KVM support (needed for Windows desktop VM)
+- Prompts to select desktop platform if Windows is available
+- Configures environment variables and Docker profiles
+- Starts the stack with the appropriate desktop service
 
 **Platform options:**
 1. **Linux Desktop** (bytebotd) - Native Linux with X11/noVNC (default, fastest)
-2. **Windows 11 Desktop** (OmniBox) - Full Windows VM via dockurr/windows
+2. **Windows 11 Desktop** (OmniBox) - Full Windows VM via dockurr/windows (requires KVM + Tiny11 ISO)
+
+**Manual platform selection:**
+```bash
+# Force Linux desktop
+BYTEBOT_FORCE_PLATFORM=linux ./scripts/start.sh
+
+# Force Windows desktop
+BYTEBOT_FORCE_PLATFORM=windows ./scripts/start.sh
+```
 
 **Access the application:**
 - 🌐 **Web UI:** http://localhost:9992

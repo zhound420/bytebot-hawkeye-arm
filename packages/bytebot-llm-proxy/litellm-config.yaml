@@ -2298,7 +2298,135 @@ model_list:
       supports_function_calling: true
     model_info:
       supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-4b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-4b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-30b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-30b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-8b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-8b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen2.5-vl-32b-instruct
+    litellm_params:
+      model: openai/qwen2.5-vl-32b-instruct
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen2.5-vl-7b-instruct-vision-r1
+    litellm_params:
+      model: openai/qwen2.5-vl-7b-instruct-vision-r1
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-gemma3-4b-vision@f16
+    litellm_params:
+      model: openai/gemma3-4b-vision@f16
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-gemma3-4b-vision@q8_0
+    litellm_params:
+      model: openai/gemma3-4b-vision@q8_0
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen2.5-vl-7b
+    litellm_params:
+      model: openai/qwen/qwen2.5-vl-7b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
   # LMStudio VLM models (auto-discovered on 2025-10-23 18:34:28)
+  - model_name: local-lmstudio-qwen-qwen3-vl-4b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-4b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-30b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-30b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-8b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-8b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen2.5-vl-32b-instruct
+    litellm_params:
+      model: openai/qwen2.5-vl-32b-instruct
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen2.5-vl-7b-instruct-vision-r1
+    litellm_params:
+      model: openai/qwen2.5-vl-7b-instruct-vision-r1
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-gemma3-4b-vision@f16
+    litellm_params:
+      model: openai/gemma3-4b-vision@f16
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-gemma3-4b-vision@q8_0
+    litellm_params:
+      model: openai/gemma3-4b-vision@q8_0
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen2.5-vl-7b
+    litellm_params:
+      model: openai/qwen/qwen2.5-vl-7b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
   - model_name: local-lmstudio-qwen-qwen3-vl-4b
     litellm_params:
       model: openai/qwen/qwen3-vl-4b
@@ -6076,7 +6204,135 @@ model_list:
       supports_function_calling: true
     model_info:
       supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-4b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-4b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-30b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-30b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-8b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-8b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen2.5-vl-32b-instruct
+    litellm_params:
+      model: openai/qwen2.5-vl-32b-instruct
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen2.5-vl-7b-instruct-vision-r1
+    litellm_params:
+      model: openai/qwen2.5-vl-7b-instruct-vision-r1
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-gemma3-4b-vision@f16
+    litellm_params:
+      model: openai/gemma3-4b-vision@f16
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-gemma3-4b-vision@q8_0
+    litellm_params:
+      model: openai/gemma3-4b-vision@q8_0
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen2.5-vl-7b
+    litellm_params:
+      model: openai/qwen/qwen2.5-vl-7b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
   # LMStudio VLM models (auto-discovered on 2025-10-23 18:44:07)
+  - model_name: local-lmstudio-qwen-qwen3-vl-4b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-4b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-30b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-30b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-8b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-8b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen2.5-vl-32b-instruct
+    litellm_params:
+      model: openai/qwen2.5-vl-32b-instruct
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen2.5-vl-7b-instruct-vision-r1
+    litellm_params:
+      model: openai/qwen2.5-vl-7b-instruct-vision-r1
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-gemma3-4b-vision@f16
+    litellm_params:
+      model: openai/gemma3-4b-vision@f16
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-gemma3-4b-vision@q8_0
+    litellm_params:
+      model: openai/gemma3-4b-vision@q8_0
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen2.5-vl-7b
+    litellm_params:
+      model: openai/qwen/qwen2.5-vl-7b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
   - model_name: local-lmstudio-qwen-qwen3-vl-4b
     litellm_params:
       model: openai/qwen/qwen3-vl-4b
@@ -9598,7 +9854,135 @@ model_list:
       supports_function_calling: true
     model_info:
       supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-4b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-4b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-30b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-30b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-8b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-8b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen2.5-vl-32b-instruct
+    litellm_params:
+      model: openai/qwen2.5-vl-32b-instruct
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen2.5-vl-7b-instruct-vision-r1
+    litellm_params:
+      model: openai/qwen2.5-vl-7b-instruct-vision-r1
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-gemma3-4b-vision@f16
+    litellm_params:
+      model: openai/gemma3-4b-vision@f16
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-gemma3-4b-vision@q8_0
+    litellm_params:
+      model: openai/gemma3-4b-vision@q8_0
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen2.5-vl-7b
+    litellm_params:
+      model: openai/qwen/qwen2.5-vl-7b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
   # LMStudio VLM models (auto-discovered on 2025-10-23 18:49:16)
+  - model_name: local-lmstudio-qwen-qwen3-vl-4b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-4b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-30b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-30b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-8b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-8b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen2.5-vl-32b-instruct
+    litellm_params:
+      model: openai/qwen2.5-vl-32b-instruct
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen2.5-vl-7b-instruct-vision-r1
+    litellm_params:
+      model: openai/qwen2.5-vl-7b-instruct-vision-r1
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-gemma3-4b-vision@f16
+    litellm_params:
+      model: openai/gemma3-4b-vision@f16
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-gemma3-4b-vision@q8_0
+    litellm_params:
+      model: openai/gemma3-4b-vision@q8_0
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen2.5-vl-7b
+    litellm_params:
+      model: openai/qwen/qwen2.5-vl-7b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
   - model_name: local-lmstudio-qwen-qwen3-vl-4b
     litellm_params:
       model: openai/qwen/qwen3-vl-4b
@@ -12864,7 +13248,135 @@ model_list:
       supports_function_calling: true
     model_info:
       supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-4b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-4b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-30b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-30b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-8b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-8b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen2.5-vl-32b-instruct
+    litellm_params:
+      model: openai/qwen2.5-vl-32b-instruct
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen2.5-vl-7b-instruct-vision-r1
+    litellm_params:
+      model: openai/qwen2.5-vl-7b-instruct-vision-r1
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-gemma3-4b-vision@f16
+    litellm_params:
+      model: openai/gemma3-4b-vision@f16
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-gemma3-4b-vision@q8_0
+    litellm_params:
+      model: openai/gemma3-4b-vision@q8_0
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen2.5-vl-7b
+    litellm_params:
+      model: openai/qwen/qwen2.5-vl-7b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
   # LMStudio VLM models (auto-discovered on 2025-10-23 18:56:20)
+  - model_name: local-lmstudio-qwen-qwen3-vl-4b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-4b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-30b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-30b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-8b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-8b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen2.5-vl-32b-instruct
+    litellm_params:
+      model: openai/qwen2.5-vl-32b-instruct
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen2.5-vl-7b-instruct-vision-r1
+    litellm_params:
+      model: openai/qwen2.5-vl-7b-instruct-vision-r1
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-gemma3-4b-vision@f16
+    litellm_params:
+      model: openai/gemma3-4b-vision@f16
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-gemma3-4b-vision@q8_0
+    litellm_params:
+      model: openai/gemma3-4b-vision@q8_0
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen2.5-vl-7b
+    litellm_params:
+      model: openai/qwen/qwen2.5-vl-7b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
   - model_name: local-lmstudio-qwen-qwen3-vl-4b
     litellm_params:
       model: openai/qwen/qwen3-vl-4b
@@ -15874,7 +16386,135 @@ model_list:
       supports_function_calling: true
     model_info:
       supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-4b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-4b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-30b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-30b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-8b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-8b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen2.5-vl-32b-instruct
+    litellm_params:
+      model: openai/qwen2.5-vl-32b-instruct
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen2.5-vl-7b-instruct-vision-r1
+    litellm_params:
+      model: openai/qwen2.5-vl-7b-instruct-vision-r1
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-gemma3-4b-vision@f16
+    litellm_params:
+      model: openai/gemma3-4b-vision@f16
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-gemma3-4b-vision@q8_0
+    litellm_params:
+      model: openai/gemma3-4b-vision@q8_0
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen2.5-vl-7b
+    litellm_params:
+      model: openai/qwen/qwen2.5-vl-7b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
   # LMStudio VLM models (auto-discovered on 2025-10-23 20:20:00)
+  - model_name: local-lmstudio-qwen-qwen3-vl-4b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-4b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-30b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-30b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-8b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-8b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen2.5-vl-32b-instruct
+    litellm_params:
+      model: openai/qwen2.5-vl-32b-instruct
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen2.5-vl-7b-instruct-vision-r1
+    litellm_params:
+      model: openai/qwen2.5-vl-7b-instruct-vision-r1
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-gemma3-4b-vision@f16
+    litellm_params:
+      model: openai/gemma3-4b-vision@f16
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-gemma3-4b-vision@q8_0
+    litellm_params:
+      model: openai/gemma3-4b-vision@q8_0
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen2.5-vl-7b
+    litellm_params:
+      model: openai/qwen/qwen2.5-vl-7b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
   - model_name: local-lmstudio-qwen-qwen3-vl-4b
     litellm_params:
       model: openai/qwen/qwen3-vl-4b
@@ -18628,7 +19268,135 @@ model_list:
       supports_function_calling: true
     model_info:
       supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-4b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-4b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-30b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-30b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-8b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-8b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen2.5-vl-32b-instruct
+    litellm_params:
+      model: openai/qwen2.5-vl-32b-instruct
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen2.5-vl-7b-instruct-vision-r1
+    litellm_params:
+      model: openai/qwen2.5-vl-7b-instruct-vision-r1
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-gemma3-4b-vision@f16
+    litellm_params:
+      model: openai/gemma3-4b-vision@f16
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-gemma3-4b-vision@q8_0
+    litellm_params:
+      model: openai/gemma3-4b-vision@q8_0
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen2.5-vl-7b
+    litellm_params:
+      model: openai/qwen/qwen2.5-vl-7b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
   # LMStudio VLM models (auto-discovered on 2025-10-23 21:16:06)
+  - model_name: local-lmstudio-qwen-qwen3-vl-4b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-4b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-30b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-30b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-8b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-8b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen2.5-vl-32b-instruct
+    litellm_params:
+      model: openai/qwen2.5-vl-32b-instruct
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen2.5-vl-7b-instruct-vision-r1
+    litellm_params:
+      model: openai/qwen2.5-vl-7b-instruct-vision-r1
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-gemma3-4b-vision@f16
+    litellm_params:
+      model: openai/gemma3-4b-vision@f16
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-gemma3-4b-vision@q8_0
+    litellm_params:
+      model: openai/gemma3-4b-vision@q8_0
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen2.5-vl-7b
+    litellm_params:
+      model: openai/qwen/qwen2.5-vl-7b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
   - model_name: local-lmstudio-qwen-qwen3-vl-4b
     litellm_params:
       model: openai/qwen/qwen3-vl-4b
@@ -21126,7 +21894,135 @@ model_list:
       supports_function_calling: true
     model_info:
       supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-4b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-4b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-30b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-30b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-8b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-8b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen2.5-vl-32b-instruct
+    litellm_params:
+      model: openai/qwen2.5-vl-32b-instruct
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen2.5-vl-7b-instruct-vision-r1
+    litellm_params:
+      model: openai/qwen2.5-vl-7b-instruct-vision-r1
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-gemma3-4b-vision@f16
+    litellm_params:
+      model: openai/gemma3-4b-vision@f16
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-gemma3-4b-vision@q8_0
+    litellm_params:
+      model: openai/gemma3-4b-vision@q8_0
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen2.5-vl-7b
+    litellm_params:
+      model: openai/qwen/qwen2.5-vl-7b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
   # LMStudio VLM models (auto-discovered on 2025-10-24 08:21:39)
+  - model_name: local-lmstudio-qwen-qwen3-vl-4b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-4b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-30b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-30b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-8b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-8b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen2.5-vl-32b-instruct
+    litellm_params:
+      model: openai/qwen2.5-vl-32b-instruct
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen2.5-vl-7b-instruct-vision-r1
+    litellm_params:
+      model: openai/qwen2.5-vl-7b-instruct-vision-r1
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-gemma3-4b-vision@f16
+    litellm_params:
+      model: openai/gemma3-4b-vision@f16
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-gemma3-4b-vision@q8_0
+    litellm_params:
+      model: openai/gemma3-4b-vision@q8_0
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen2.5-vl-7b
+    litellm_params:
+      model: openai/qwen/qwen2.5-vl-7b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
   - model_name: local-lmstudio-qwen-qwen3-vl-4b
     litellm_params:
       model: openai/qwen/qwen3-vl-4b
@@ -23368,7 +24264,135 @@ model_list:
       supports_function_calling: true
     model_info:
       supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-4b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-4b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-30b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-30b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-8b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-8b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen2.5-vl-32b-instruct
+    litellm_params:
+      model: openai/qwen2.5-vl-32b-instruct
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen2.5-vl-7b-instruct-vision-r1
+    litellm_params:
+      model: openai/qwen2.5-vl-7b-instruct-vision-r1
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-gemma3-4b-vision@f16
+    litellm_params:
+      model: openai/gemma3-4b-vision@f16
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-gemma3-4b-vision@q8_0
+    litellm_params:
+      model: openai/gemma3-4b-vision@q8_0
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen2.5-vl-7b
+    litellm_params:
+      model: openai/qwen/qwen2.5-vl-7b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
   # LMStudio VLM models (auto-discovered on 2025-10-25 13:51:28)
+  - model_name: local-lmstudio-qwen-qwen3-vl-4b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-4b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-30b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-30b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-8b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-8b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen2.5-vl-32b-instruct
+    litellm_params:
+      model: openai/qwen2.5-vl-32b-instruct
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen2.5-vl-7b-instruct-vision-r1
+    litellm_params:
+      model: openai/qwen2.5-vl-7b-instruct-vision-r1
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-gemma3-4b-vision@f16
+    litellm_params:
+      model: openai/gemma3-4b-vision@f16
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-gemma3-4b-vision@q8_0
+    litellm_params:
+      model: openai/gemma3-4b-vision@q8_0
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen2.5-vl-7b
+    litellm_params:
+      model: openai/qwen/qwen2.5-vl-7b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
   - model_name: local-lmstudio-qwen-qwen3-vl-4b
     litellm_params:
       model: openai/qwen/qwen3-vl-4b
@@ -25354,7 +26378,135 @@ model_list:
       supports_function_calling: true
     model_info:
       supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-4b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-4b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-30b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-30b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-8b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-8b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen2.5-vl-32b-instruct
+    litellm_params:
+      model: openai/qwen2.5-vl-32b-instruct
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen2.5-vl-7b-instruct-vision-r1
+    litellm_params:
+      model: openai/qwen2.5-vl-7b-instruct-vision-r1
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-gemma3-4b-vision@f16
+    litellm_params:
+      model: openai/gemma3-4b-vision@f16
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-gemma3-4b-vision@q8_0
+    litellm_params:
+      model: openai/gemma3-4b-vision@q8_0
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen2.5-vl-7b
+    litellm_params:
+      model: openai/qwen/qwen2.5-vl-7b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
   # LMStudio VLM models (auto-discovered on 2025-10-25 18:34:35)
+  - model_name: local-lmstudio-qwen-qwen3-vl-4b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-4b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-30b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-30b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-8b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-8b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen2.5-vl-32b-instruct
+    litellm_params:
+      model: openai/qwen2.5-vl-32b-instruct
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen2.5-vl-7b-instruct-vision-r1
+    litellm_params:
+      model: openai/qwen2.5-vl-7b-instruct-vision-r1
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-gemma3-4b-vision@f16
+    litellm_params:
+      model: openai/gemma3-4b-vision@f16
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-gemma3-4b-vision@q8_0
+    litellm_params:
+      model: openai/gemma3-4b-vision@q8_0
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen2.5-vl-7b
+    litellm_params:
+      model: openai/qwen/qwen2.5-vl-7b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
   - model_name: local-lmstudio-qwen-qwen3-vl-4b
     litellm_params:
       model: openai/qwen/qwen3-vl-4b
@@ -27084,7 +28236,135 @@ model_list:
       supports_function_calling: true
     model_info:
       supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-4b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-4b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-30b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-30b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-8b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-8b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen2.5-vl-32b-instruct
+    litellm_params:
+      model: openai/qwen2.5-vl-32b-instruct
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen2.5-vl-7b-instruct-vision-r1
+    litellm_params:
+      model: openai/qwen2.5-vl-7b-instruct-vision-r1
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-gemma3-4b-vision@f16
+    litellm_params:
+      model: openai/gemma3-4b-vision@f16
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-gemma3-4b-vision@q8_0
+    litellm_params:
+      model: openai/gemma3-4b-vision@q8_0
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen2.5-vl-7b
+    litellm_params:
+      model: openai/qwen/qwen2.5-vl-7b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
   # LMStudio VLM models (auto-discovered on 2025-10-25 21:20:45)
+  - model_name: local-lmstudio-qwen-qwen3-vl-4b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-4b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-30b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-30b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-8b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-8b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen2.5-vl-32b-instruct
+    litellm_params:
+      model: openai/qwen2.5-vl-32b-instruct
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen2.5-vl-7b-instruct-vision-r1
+    litellm_params:
+      model: openai/qwen2.5-vl-7b-instruct-vision-r1
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-gemma3-4b-vision@f16
+    litellm_params:
+      model: openai/gemma3-4b-vision@f16
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-gemma3-4b-vision@q8_0
+    litellm_params:
+      model: openai/gemma3-4b-vision@q8_0
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen2.5-vl-7b
+    litellm_params:
+      model: openai/qwen/qwen2.5-vl-7b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
   - model_name: local-lmstudio-qwen-qwen3-vl-4b
     litellm_params:
       model: openai/qwen/qwen3-vl-4b
@@ -28558,6 +29838,70 @@ model_list:
       supports_function_calling: true
     model_info:
       supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-4b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-4b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-30b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-30b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-8b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-8b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen2.5-vl-32b-instruct
+    litellm_params:
+      model: openai/qwen2.5-vl-32b-instruct
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen2.5-vl-7b-instruct-vision-r1
+    litellm_params:
+      model: openai/qwen2.5-vl-7b-instruct-vision-r1
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-gemma3-4b-vision@f16
+    litellm_params:
+      model: openai/gemma3-4b-vision@f16
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-gemma3-4b-vision@q8_0
+    litellm_params:
+      model: openai/gemma3-4b-vision@q8_0
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen2.5-vl-7b
+    litellm_params:
+      model: openai/qwen/qwen2.5-vl-7b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
   # Ollama VLM models (manually added 2025-10-26)
   - model_name: local-ollama-qwen2-5vl-32b
     litellm_params:
@@ -28588,6 +29932,70 @@ model_list:
     model_info:
       supports_vision: true
   # LMStudio VLM models (auto-discovered on 2025-10-26 17:51:10)
+  - model_name: local-lmstudio-qwen-qwen3-vl-4b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-4b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-30b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-30b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-8b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-8b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen2.5-vl-32b-instruct
+    litellm_params:
+      model: openai/qwen2.5-vl-32b-instruct
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen2.5-vl-7b-instruct-vision-r1
+    litellm_params:
+      model: openai/qwen2.5-vl-7b-instruct-vision-r1
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-gemma3-4b-vision@f16
+    litellm_params:
+      model: openai/gemma3-4b-vision@f16
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-gemma3-4b-vision@q8_0
+    litellm_params:
+      model: openai/gemma3-4b-vision@q8_0
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen2.5-vl-7b
+    litellm_params:
+      model: openai/qwen/qwen2.5-vl-7b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
   - model_name: local-lmstudio-qwen-qwen3-vl-4b
     litellm_params:
       model: openai/qwen/qwen3-vl-4b
@@ -29805,7 +31213,135 @@ model_list:
       supports_function_calling: true
     model_info:
       supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-4b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-4b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-30b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-30b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-8b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-8b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen2.5-vl-32b-instruct
+    litellm_params:
+      model: openai/qwen2.5-vl-32b-instruct
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen2.5-vl-7b-instruct-vision-r1
+    litellm_params:
+      model: openai/qwen2.5-vl-7b-instruct-vision-r1
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-gemma3-4b-vision@f16
+    litellm_params:
+      model: openai/gemma3-4b-vision@f16
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-gemma3-4b-vision@q8_0
+    litellm_params:
+      model: openai/gemma3-4b-vision@q8_0
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen2.5-vl-7b
+    litellm_params:
+      model: openai/qwen/qwen2.5-vl-7b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
   # LMStudio VLM models (auto-discovered on 2025-10-26 18:04:46)
+  - model_name: local-lmstudio-qwen-qwen3-vl-4b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-4b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-30b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-30b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-8b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-8b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen2.5-vl-32b-instruct
+    litellm_params:
+      model: openai/qwen2.5-vl-32b-instruct
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen2.5-vl-7b-instruct-vision-r1
+    litellm_params:
+      model: openai/qwen2.5-vl-7b-instruct-vision-r1
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-gemma3-4b-vision@f16
+    litellm_params:
+      model: openai/gemma3-4b-vision@f16
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-gemma3-4b-vision@q8_0
+    litellm_params:
+      model: openai/gemma3-4b-vision@q8_0
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen2.5-vl-7b
+    litellm_params:
+      model: openai/qwen/qwen2.5-vl-7b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
   - model_name: local-lmstudio-qwen-qwen3-vl-4b
     litellm_params:
       model: openai/qwen/qwen3-vl-4b
@@ -30767,7 +32303,135 @@ model_list:
       supports_function_calling: true
     model_info:
       supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-4b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-4b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-30b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-30b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-8b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-8b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen2.5-vl-32b-instruct
+    litellm_params:
+      model: openai/qwen2.5-vl-32b-instruct
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen2.5-vl-7b-instruct-vision-r1
+    litellm_params:
+      model: openai/qwen2.5-vl-7b-instruct-vision-r1
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-gemma3-4b-vision@f16
+    litellm_params:
+      model: openai/gemma3-4b-vision@f16
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-gemma3-4b-vision@q8_0
+    litellm_params:
+      model: openai/gemma3-4b-vision@q8_0
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen2.5-vl-7b
+    litellm_params:
+      model: openai/qwen/qwen2.5-vl-7b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
   # LMStudio VLM models (auto-discovered on 2025-10-26 18:18:00)
+  - model_name: local-lmstudio-qwen-qwen3-vl-4b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-4b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-30b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-30b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-8b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-8b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen2.5-vl-32b-instruct
+    litellm_params:
+      model: openai/qwen2.5-vl-32b-instruct
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen2.5-vl-7b-instruct-vision-r1
+    litellm_params:
+      model: openai/qwen2.5-vl-7b-instruct-vision-r1
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-gemma3-4b-vision@f16
+    litellm_params:
+      model: openai/gemma3-4b-vision@f16
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-gemma3-4b-vision@q8_0
+    litellm_params:
+      model: openai/gemma3-4b-vision@q8_0
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen2.5-vl-7b
+    litellm_params:
+      model: openai/qwen/qwen2.5-vl-7b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
   - model_name: local-lmstudio-qwen-qwen3-vl-4b
     litellm_params:
       model: openai/qwen/qwen3-vl-4b
@@ -31473,7 +33137,135 @@ model_list:
       supports_function_calling: true
     model_info:
       supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-4b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-4b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-30b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-30b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-8b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-8b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen2.5-vl-32b-instruct
+    litellm_params:
+      model: openai/qwen2.5-vl-32b-instruct
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen2.5-vl-7b-instruct-vision-r1
+    litellm_params:
+      model: openai/qwen2.5-vl-7b-instruct-vision-r1
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-gemma3-4b-vision@f16
+    litellm_params:
+      model: openai/gemma3-4b-vision@f16
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-gemma3-4b-vision@q8_0
+    litellm_params:
+      model: openai/gemma3-4b-vision@q8_0
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen2.5-vl-7b
+    litellm_params:
+      model: openai/qwen/qwen2.5-vl-7b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
   # LMStudio VLM models (auto-discovered on 2025-10-26 18:44:16)
+  - model_name: local-lmstudio-qwen-qwen3-vl-4b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-4b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-30b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-30b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-8b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-8b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen2.5-vl-32b-instruct
+    litellm_params:
+      model: openai/qwen2.5-vl-32b-instruct
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen2.5-vl-7b-instruct-vision-r1
+    litellm_params:
+      model: openai/qwen2.5-vl-7b-instruct-vision-r1
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-gemma3-4b-vision@f16
+    litellm_params:
+      model: openai/gemma3-4b-vision@f16
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-gemma3-4b-vision@q8_0
+    litellm_params:
+      model: openai/gemma3-4b-vision@q8_0
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen2.5-vl-7b
+    litellm_params:
+      model: openai/qwen/qwen2.5-vl-7b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
   - model_name: local-lmstudio-qwen-qwen3-vl-4b
     litellm_params:
       model: openai/qwen/qwen3-vl-4b
@@ -31923,6 +33715,70 @@ model_list:
       supports_function_calling: true
     model_info:
       supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-4b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-4b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-30b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-30b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-8b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-8b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen2.5-vl-32b-instruct
+    litellm_params:
+      model: openai/qwen2.5-vl-32b-instruct
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen2.5-vl-7b-instruct-vision-r1
+    litellm_params:
+      model: openai/qwen2.5-vl-7b-instruct-vision-r1
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-gemma3-4b-vision@f16
+    litellm_params:
+      model: openai/gemma3-4b-vision@f16
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-gemma3-4b-vision@q8_0
+    litellm_params:
+      model: openai/gemma3-4b-vision@q8_0
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen2.5-vl-7b
+    litellm_params:
+      model: openai/qwen/qwen2.5-vl-7b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
   # LMStudio VLM models (auto-discovered on 2025-10-26 19:22:38)
   - model_name: local-lmstudio-qwen-qwen3-vl-4b
     litellm_params:
@@ -32052,7 +33908,200 @@ model_list:
       supports_function_calling: true
     model_info:
       supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-4b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-4b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-30b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-30b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-8b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-8b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen2.5-vl-32b-instruct
+    litellm_params:
+      model: openai/qwen2.5-vl-32b-instruct
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen2.5-vl-7b-instruct-vision-r1
+    litellm_params:
+      model: openai/qwen2.5-vl-7b-instruct-vision-r1
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-gemma3-4b-vision@f16
+    litellm_params:
+      model: openai/gemma3-4b-vision@f16
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-gemma3-4b-vision@q8_0
+    litellm_params:
+      model: openai/gemma3-4b-vision@q8_0
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen2.5-vl-7b
+    litellm_params:
+      model: openai/qwen/qwen2.5-vl-7b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
   # LMStudio VLM models (auto-discovered on 2025-10-26 19:49:58)
+  - model_name: local-lmstudio-qwen-qwen3-vl-4b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-4b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-30b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-30b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-8b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-8b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen2.5-vl-32b-instruct
+    litellm_params:
+      model: openai/qwen2.5-vl-32b-instruct
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen2.5-vl-7b-instruct-vision-r1
+    litellm_params:
+      model: openai/qwen2.5-vl-7b-instruct-vision-r1
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-gemma3-4b-vision@f16
+    litellm_params:
+      model: openai/gemma3-4b-vision@f16
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-gemma3-4b-vision@q8_0
+    litellm_params:
+      model: openai/gemma3-4b-vision@q8_0
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen2.5-vl-7b
+    litellm_params:
+      model: openai/qwen/qwen2.5-vl-7b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-4b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-4b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-30b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-30b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen3-vl-8b
+    litellm_params:
+      model: openai/qwen/qwen3-vl-8b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen2.5-vl-32b-instruct
+    litellm_params:
+      model: openai/qwen2.5-vl-32b-instruct
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen2.5-vl-7b-instruct-vision-r1
+    litellm_params:
+      model: openai/qwen2.5-vl-7b-instruct-vision-r1
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-gemma3-4b-vision@f16
+    litellm_params:
+      model: openai/gemma3-4b-vision@f16
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-gemma3-4b-vision@q8_0
+    litellm_params:
+      model: openai/gemma3-4b-vision@q8_0
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  - model_name: local-lmstudio-qwen-qwen2.5-vl-7b
+    litellm_params:
+      model: openai/qwen/qwen2.5-vl-7b
+      api_base: http://192.168.4.112:1234/v1
+      api_key: lm-studio
+      supports_function_calling: true
+    model_info:
+      supports_vision: true
+  # LMStudio VLM models (auto-discovered on 2025-11-03 21:13:17)
   - model_name: local-lmstudio-qwen-qwen3-vl-4b
     litellm_params:
       model: openai/qwen/qwen3-vl-4b
