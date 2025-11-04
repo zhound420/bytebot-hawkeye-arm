@@ -929,11 +929,14 @@ Do NOT take screenshots without acting. Do NOT repeat previous actions. Choose o
 
       const service = this.services[model.provider];
       if (!service) {
-        this.logger.warn(
-          `No service found for model provider: ${model.provider}`,
-        );
+        const errorMessage = `No service found for model provider: ${model.provider}`;
+        this.logger.warn(errorMessage);
+        const failureTimestamp = new Date();
         await this.tasksService.update(taskId, {
           status: TaskStatus.FAILED,
+          error: errorMessage,
+          completedAt: failureTimestamp,
+          executedAt: task.executedAt ?? failureTimestamp,
         });
         this.isProcessing = false;
         this.currentTaskId = null;
@@ -1000,11 +1003,16 @@ Do NOT take screenshots without acting. Do NOT repeat previous actions. Choose o
       );
 
       if (messageContentBlocks.length === 0) {
+        const errorMessage = 'Received no content blocks from LLM';
         this.logger.warn(
-          `Task ID: ${taskId} received no content blocks from LLM, marking as failed`,
+          `Task ID: ${taskId} ${errorMessage}, marking as failed`,
         );
+        const failureTimestamp = new Date();
         await this.tasksService.update(taskId, {
           status: TaskStatus.FAILED,
+          error: errorMessage,
+          completedAt: failureTimestamp,
+          executedAt: task.executedAt ?? failureTimestamp,
         });
         this.isProcessing = false;
         this.currentTaskId = null;
@@ -1296,13 +1304,36 @@ Do NOT take screenshots without acting. Do NOT repeat previous actions. Choose o
       if (error?.name === 'BytebotAgentInterrupt') {
         this.logger.warn(`Processing aborted for task ID: ${taskId}`);
       } else {
+        const errorMessage = error.message || 'Unknown error during task processing';
         this.logger.error(
-          `Error during task processing iteration for task ID: ${taskId} - ${error.message}`,
+          `Error during task processing iteration for task ID: ${taskId} - ${errorMessage}`,
           error.stack,
         );
-        await this.tasksService.update(taskId, {
-          status: TaskStatus.FAILED,
-        });
+
+        const failureTimestamp = new Date();
+        try {
+          const task = await this.tasksService.findById(taskId);
+          await this.tasksService.update(taskId, {
+            status: TaskStatus.FAILED,
+            error: errorMessage,
+            completedAt: failureTimestamp,
+            executedAt: task.executedAt ?? failureTimestamp,
+          });
+
+          // Finalize trajectory recording for failed task
+          try {
+            await this.trajectoryRecorder.completeTrajectory(taskId, false);
+          } catch (trajectoryError) {
+            this.logger.error(
+              `Failed to complete trajectory on error: ${trajectoryError.message}`,
+            );
+          }
+        } catch (updateError) {
+          this.logger.error(
+            `Failed to update task status on error: ${updateError.message}`,
+          );
+        }
+
         this.isProcessing = false;
         this.currentTaskId = null;
 

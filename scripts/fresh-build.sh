@@ -292,7 +292,7 @@ echo "LMStudio allows running local VLM models on your network."
 read -p "Configure LMStudio models? [y/N]: " setup_lmstudio
 
 if [[ $setup_lmstudio =~ ^[Yy]$ ]]; then
-    ./scripts/setup-lmstudio.sh
+    ./scripts/setup-lmstudio.sh || true
 fi
 echo ""
 
@@ -302,7 +302,7 @@ echo "Ollama allows running local VLM models on your machine."
 read -p "Configure Ollama models? [y/N]: " setup_ollama
 
 if [[ $setup_ollama =~ ^[Yy]$ ]]; then
-    ./scripts/setup-ollama.sh
+    ./scripts/setup-ollama.sh || true
 fi
 echo ""
 

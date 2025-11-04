@@ -206,3 +206,7 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 # QEMU
 *.qcow2
 packages/omnibox/vm/win11setup/setupscripts/firstboot_log.txt
+
+# OmniBox VM runtime data (auto-generated on each boot)
+packages/omnibox/vm/win11setup/setupscripts/setup-start-time.txt
+packages/omnibox/vm/win11setup/setupscripts/setup-status.json

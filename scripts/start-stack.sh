@@ -202,7 +202,7 @@ if [[ "$ARCH" == "arm64" ]] && [[ "$OS" == "Darwin" ]]; then
         read -p "[y/N]: " setup_lmstudio
 
         if [[ $setup_lmstudio =~ ^[Yy]$ ]]; then
-            ./scripts/setup-lmstudio.sh
+            ./scripts/setup-lmstudio.sh || true
         fi
 
         # Ollama Configuration (optional)
@@ -212,7 +212,7 @@ if [[ "$ARCH" == "arm64" ]] && [[ "$OS" == "Darwin" ]]; then
         read -p "[y/N]: " setup_ollama
 
         if [[ $setup_ollama =~ ^[Yy]$ ]]; then
-            ./scripts/setup-ollama.sh
+            ./scripts/setup-ollama.sh || true
         fi
 
         cd docker
@@ -275,7 +275,7 @@ if [[ "$ARCH" == "arm64" ]] && [[ "$OS" == "Darwin" ]]; then
         read -p "[y/N]: " setup_lmstudio
 
         if [[ $setup_lmstudio =~ ^[Yy]$ ]]; then
-            ./scripts/setup-lmstudio.sh
+            ./scripts/setup-lmstudio.sh || true
         fi
 
         # Ollama Configuration (optional)
@@ -285,7 +285,7 @@ if [[ "$ARCH" == "arm64" ]] && [[ "$OS" == "Darwin" ]]; then
         read -p "[y/N]: " setup_ollama
 
         if [[ $setup_ollama =~ ^[Yy]$ ]]; then
-            ./scripts/setup-ollama.sh
+            ./scripts/setup-ollama.sh || true
         fi
 
         cd docker
@@ -383,7 +383,7 @@ elif [[ "$ARCH" == "x86_64" ]] || [[ "$ARCH" == "amd64" ]]; then
     read -p "[y/N]: " setup_lmstudio
 
     if [[ $setup_lmstudio =~ ^[Yy]$ ]]; then
-        ./scripts/setup-lmstudio.sh
+        ./scripts/setup-lmstudio.sh || true
     fi
 
     # Ollama Configuration (optional)
@@ -393,7 +393,7 @@ elif [[ "$ARCH" == "x86_64" ]] || [[ "$ARCH" == "amd64" ]]; then
     read -p "[y/N]: " setup_ollama
 
     if [[ $setup_ollama =~ ^[Yy]$ ]]; then
-        ./scripts/setup-ollama.sh
+        ./scripts/setup-ollama.sh || true
     fi
 
     cd docker

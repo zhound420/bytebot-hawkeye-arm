@@ -49,6 +49,27 @@ export class OmniBoxClient {
         );
       }
 
+      // Check Python execution result
+      const result = await response.json();
+
+      // Check for execution errors
+      if (result.status === 'error') {
+        throw new Error(`Python execution error: ${result.message}`);
+      }
+
+      // Check return code
+      if (result.returncode !== 0) {
+        const stderr = result.error?.trim() || '(no error output)';
+        throw new Error(
+          `Python command failed with exit code ${result.returncode}: ${stderr}`,
+        );
+      }
+
+      // Log stderr warnings even on success (returncode 0)
+      if (result.error && result.error.trim().length > 0) {
+        this.logger.warn(`Python stderr: ${result.error.trim()}`);
+      }
+
       const elapsed = Date.now() - startTime;
       this.logger.debug(`Executed command in ${elapsed}ms`);
     } catch (error) {
