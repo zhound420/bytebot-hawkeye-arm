@@ -4,6 +4,9 @@
 
 # Bytebot Hawkeye ARM64: Multi-Platform AI Desktop Agent
 
+[![GitHub](https://img.shields.io/badge/GitHub-bytebot--hawkeye--arm-blue?logo=github)](https://github.com/zhound420/bytebot-hawkeye-arm)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+
 **ARM64-optimized AI desktop agent for Apple Silicon (M1-M4) and NVIDIA DGX Spark**
 **GPU-accelerated computer vision with 89% click accuracy on ARM64 architectures**
 
@@ -25,6 +28,17 @@ This is the **ARM64-optimized variant** of Bytebot Hawkeye, specifically designe
 - **Unified Memory**: Efficient memory sharing on both platforms (128GB on DGX Spark!)
 - **Power Efficiency**: Lower power consumption vs x86_64 while maintaining performance
 - **Future-Proof**: ARM64 is the future for AI workloads (Apple, NVIDIA, AWS Graviton)
+
+### Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/zhound420/bytebot-hawkeye-arm.git
+cd bytebot-hawkeye-arm
+
+# Install dependencies
+npm install
+```
 
 ---
 
@@ -138,7 +152,7 @@ This ARM64 fork includes **all Hawkeye precision features**:
 
 ## 🔄 Relationship to Main Repository
 
-This is an **ARM64-optimized fork** of [bytebot-hawkeye-op](https://github.com/your-org/bytebot-hawkeye-op):
+This is an **ARM64-optimized fork** of [bytebot-hawkeye-op](https://github.com/zhound420/bytebot-hawkeye-op):
 
 - **Main repo**: x86_64-focused with optional ARM64 support
 - **This fork**: ARM64-first design with Apple Silicon + DGX Spark optimizations
@@ -188,12 +202,18 @@ docker buildx build --platform linux/arm64 -t bytebot-omniparser:arm64 packages/
 
 ## 🤝 Contributing
 
-Contributions welcome! Focus areas for ARM64 optimization:
+Contributions welcome! This is the ARM64-optimized repository for Bytebot Hawkeye.
+
+**Submit issues and pull requests to:** https://github.com/zhound420/bytebot-hawkeye-arm
+
+### Focus Areas for ARM64 Optimization
 
 - Performance benchmarks on different ARM64 platforms
 - Native binary optimization (libnut-core, uiohook-napi, sharp)
 - Apple Silicon Docker improvements (when MPS support lands)
 - DGX Spark-specific tuning and optimizations
+
+For x86_64-specific contributions, see [bytebot-hawkeye-op](https://github.com/zhound420/bytebot-hawkeye-op).
 
 ---
 
