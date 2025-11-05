@@ -199,7 +199,8 @@ sed -i.tmp '/# Add local models via Ollama/,/^litellm_settings:/{/^litellm_setti
 
 # Insert new models before litellm_settings
 TIMESTAMP=$(date +"%Y-%m-%d %H:%M:%S")
-sed -i.tmp '/^litellm_settings:/i\  # Ollama VLM models (auto-discovered on '"${TIMESTAMP}"')' "$CONFIG_FILE"
+# Using perl for macOS/Linux compatibility (BSD sed vs GNU sed syntax)
+perl -i.tmp -pe 'print "  # Ollama VLM models (auto-discovered on '"${TIMESTAMP}"')\n" if /^litellm_settings:/' "$CONFIG_FILE"
 sed -i.tmp "/# Ollama VLM models (auto-discovered on ${TIMESTAMP})/r $TEMP_MODELS" "$CONFIG_FILE"
 
 rm -f "${CONFIG_FILE}.tmp" "$TEMP_MODELS"

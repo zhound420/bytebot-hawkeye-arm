@@ -170,12 +170,12 @@ sed -i.tmp '/# Add local models via LMStudio/,/^litellm_settings:/{/^litellm_set
 # Insert new models before Ollama section (if exists) or litellm_settings
 TIMESTAMP=$(date +"%Y-%m-%d %H:%M:%S")
 if grep -q "# Ollama VLM models" "$CONFIG_FILE"; then
-    # Insert before Ollama section
-    sed -i.tmp '/# Ollama VLM models/i\  # LMStudio VLM models (auto-discovered on '"${TIMESTAMP}"')' "$CONFIG_FILE"
+    # Insert before Ollama section (using perl for macOS/Linux compatibility)
+    perl -i.tmp -pe 'print "  # LMStudio VLM models (auto-discovered on '"${TIMESTAMP}"')\n" if /# Ollama VLM models/' "$CONFIG_FILE"
     sed -i.tmp "/# LMStudio VLM models (auto-discovered on ${TIMESTAMP})/r $TEMP_MODELS" "$CONFIG_FILE"
 else
-    # Insert before litellm_settings
-    sed -i.tmp '/^litellm_settings:/i\  # LMStudio VLM models (auto-discovered on '"${TIMESTAMP}"')' "$CONFIG_FILE"
+    # Insert before litellm_settings (using perl for macOS/Linux compatibility)
+    perl -i.tmp -pe 'print "  # LMStudio VLM models (auto-discovered on '"${TIMESTAMP}"')\n" if /^litellm_settings:/' "$CONFIG_FILE"
     sed -i.tmp "/# LMStudio VLM models (auto-discovered on ${TIMESTAMP})/r $TEMP_MODELS" "$CONFIG_FILE"
 fi
 
