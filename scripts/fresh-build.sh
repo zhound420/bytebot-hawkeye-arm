@@ -9,9 +9,12 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 echo -e "${BLUE}================================================${NC}"
-echo -e "${BLUE}   Bytebot Hawkeye - Fresh Build${NC}"
+echo -e "${BLUE}   Bytebot Hawkeye ARM64 - Fresh Build${NC}"
 echo -e "${BLUE}================================================${NC}"
 echo ""
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 
 # Load environment defaults for Docker Compose variable substitution
 # This exports variables so ${VAR} syntax in docker-compose.yml works
@@ -21,38 +24,62 @@ if [ -f "docker/.env.defaults" ]; then
     set +a  # Stop auto-exporting
 fi
 
-# Detect platform with enhanced Windows/WSL support
-ARCH=$(uname -m)
-OS=$(uname -s)
+#  ═══════════════════════════════════════════════════════
+#   ARM64 Platform Detection
+#  ═══════════════════════════════════════════════════════
 
-# Detect if running on Windows WSL
-IS_WSL=false
-if grep -qEi "(Microsoft|WSL)" /proc/version 2>/dev/null; then
-    IS_WSL=true
-    OS="WSL"
+echo -e "${BLUE}Detecting ARM64 platform...${NC}"
+
+# Call detect-arm64-platform.sh for unified detection
+if [ -f "$SCRIPT_DIR/detect-arm64-platform.sh" ]; then
+    source "$SCRIPT_DIR/detect-arm64-platform.sh" --silent || true
 fi
 
-# Normalize OS name
-case "$OS" in
-    Linux*)
-        if [ "$IS_WSL" = true ]; then
-            PLATFORM="Windows (WSL)"
+# Fallback detection if script didn't set variables
+if [ -z "$BYTEBOT_ARM64_PLATFORM" ]; then
+    ARCH=$(uname -m)
+    OS=$(uname -s)
+
+    if [[ "$ARCH" == "arm64" ]] && [[ "$OS" == "Darwin" ]]; then
+        BYTEBOT_ARM64_PLATFORM="apple_silicon"
+        BYTEBOT_GPU_TYPE="mps"
+        BYTEBOT_DEPLOYMENT_MODE="hybrid"
+    elif [[ "$ARCH" == "aarch64" ]] || [[ "$ARCH" == "arm64" ]]; then
+        # Check for NVIDIA GPU
+        if command -v nvidia-smi &> /dev/null && nvidia-smi &> /dev/null; then
+            BYTEBOT_ARM64_PLATFORM="dgx_spark"
+            BYTEBOT_GPU_TYPE="cuda"
+            BYTEBOT_DEPLOYMENT_MODE="docker"
         else
-            PLATFORM="Linux"
+            BYTEBOT_ARM64_PLATFORM="arm64_generic"
+            BYTEBOT_GPU_TYPE="cpu"
+            BYTEBOT_DEPLOYMENT_MODE="docker"
         fi
+    else
+        BYTEBOT_ARM64_PLATFORM="x86_64"
+        BYTEBOT_GPU_TYPE="cpu"
+        BYTEBOT_DEPLOYMENT_MODE="docker"
+    fi
+fi
+
+case "$BYTEBOT_ARM64_PLATFORM" in
+    apple_silicon)
+        echo -e "${GREEN}✓ Platform: Apple Silicon (${BYTEBOT_GPU_TYPE})${NC}"
+        echo -e "  Deployment: Hybrid (Native OmniParser + Docker)"
         ;;
-    Darwin*)
-        PLATFORM="macOS"
+    dgx_spark)
+        echo -e "${GREEN}✓ Platform: NVIDIA DGX Spark (ARM64 + CUDA)${NC}"
+        echo -e "  Deployment: Full Docker with GPU"
         ;;
-    CYGWIN*|MINGW*|MSYS*)
-        PLATFORM="Windows (Git Bash)"
+    arm64_generic)
+        echo -e "${GREEN}✓ Platform: Generic ARM64 (CPU only)${NC}"
+        echo -e "  Deployment: Full Docker"
         ;;
     *)
-        PLATFORM="$OS"
+        echo -e "${YELLOW}✓ Platform: x86_64${NC}"
+        echo -e "  Note: This is the ARM64-optimized repository"
         ;;
 esac
-
-echo -e "${BLUE}Platform: $PLATFORM ($ARCH)${NC}"
 echo ""
 
 # Interactive Platform Selection
@@ -307,7 +334,9 @@ fi
 echo ""
 
 # Start OmniParser for Apple Silicon (native with MPS GPU)
-if [[ "$ARCH" == "arm64" ]] && [[ "$PLATFORM" == "macOS" ]]; then
+NATIVE_OMNIPARSER=false
+
+if [ "$BYTEBOT_ARM64_PLATFORM" = "apple_silicon" ]; then
     echo -e "${BLUE}Step 8: Starting native OmniParser (Apple Silicon with MPS GPU)...${NC}"
     if [ -f "scripts/start-omniparser.sh" ]; then
         ./scripts/start-omniparser.sh
@@ -318,6 +347,7 @@ if [[ "$ARCH" == "arm64" ]] && [[ "$PLATFORM" == "macOS" ]]; then
         # Verify OmniParser is running
         if curl -s http://localhost:9989/health > /dev/null 2>&1; then
             echo -e "${GREEN}✓ OmniParser running natively on port 9989${NC}"
+            NATIVE_OMNIPARSER=true
         else
             echo -e "${YELLOW}⚠ OmniParser may not be ready yet${NC}"
         fi
@@ -325,10 +355,16 @@ if [[ "$ARCH" == "arm64" ]] && [[ "$PLATFORM" == "macOS" ]]; then
         echo -e "${YELLOW}⚠ OmniParser start script not found${NC}"
     fi
     echo ""
+elif [ "$BYTEBOT_ARM64_PLATFORM" = "dgx_spark" ]; then
+    echo -e "${BLUE}Step 8: OmniParser will run in Docker with CUDA (ARM64)${NC}"
+    echo -e "${GREEN}  → DGX Spark detected: ARM64 + NVIDIA GPU${NC}"
+    echo ""
 else
     echo -e "${BLUE}Step 8: OmniParser will run in Docker container${NC}"
-    if [[ "$PLATFORM" == "Windows (WSL)" ]] || [[ "$PLATFORM" == "Linux" ]]; then
-        echo -e "${BLUE}(CUDA GPU acceleration if available)${NC}"
+    if [ "$BYTEBOT_GPU_TYPE" = "cuda" ]; then
+        echo -e "${GREEN}  → NVIDIA GPU acceleration enabled${NC}"
+    elif [ "$BYTEBOT_GPU_TYPE" = "cpu" ]; then
+        echo -e "${YELLOW}  → CPU-only mode (slower)${NC}"
     fi
     echo ""
 fi
@@ -339,17 +375,25 @@ echo ""
 
 cd docker
 
-# Determine compose file
+# Determine compose files
+COMPOSE_FILES="-f docker-compose.yml"
+
 if [[ -f "docker-compose.proxy.yml" ]]; then
-    COMPOSE_FILE="docker-compose.proxy.yml"
+    COMPOSE_FILES="$COMPOSE_FILES -f docker-compose.proxy.yml"
     echo -e "${BLUE}Using: Proxy Stack (with LiteLLM)${NC}"
+    USING_PROXY=true
 else
-    COMPOSE_FILE="docker-compose.yml"
     echo -e "${BLUE}Using: Standard Stack${NC}"
+    USING_PROXY=false
 fi
 
-# Build services - now unified across all platforms with x86_64 architecture
-echo -e "${BLUE}Building services (forced x86_64 architecture for consistency)...${NC}"
+# Add ARM64-specific compose file for DGX Spark and ARM64 generic
+if [ "$BYTEBOT_ARM64_PLATFORM" = "dgx_spark" ] || [ "$BYTEBOT_ARM64_PLATFORM" = "arm64_generic" ]; then
+    if [ -f "docker-compose.arm64.yml" ]; then
+        COMPOSE_FILES="$COMPOSE_FILES -f docker-compose.arm64.yml"
+        echo -e "${GREEN}✓ Using ARM64 platform overrides${NC}"
+    fi
+fi
 
 # Determine profile based on platform selection
 if [ "$DESKTOP_PLATFORM" = "windows" ]; then
@@ -360,27 +404,28 @@ else
     echo -e "${BLUE}Including Linux desktop (bytebotd) services...${NC}"
 fi
 
-if [[ "$ARCH" == "arm64" ]] && [[ "$PLATFORM" == "macOS" ]]; then
-    echo -e "${YELLOW}Note: Running via Rosetta 2 on Apple Silicon${NC}"
-    echo -e "${BLUE}Building without OmniParser container (using native)...${NC}"
+echo ""
+
+if [ "$BYTEBOT_ARM64_PLATFORM" = "apple_silicon" ] && [ "$NATIVE_OMNIPARSER" = true ]; then
+    echo -e "${BLUE}Building without OmniParser container (using native with MPS)...${NC}"
     # Build without OmniParser container (running natively with MPS)
-    docker compose $PROFILE_ARG -f $COMPOSE_FILE -f docker-compose.override.yml build \
+    docker compose $PROFILE_ARG $COMPOSE_FILES build \
         $([ "$DESKTOP_PLATFORM" = "windows" ] && echo "omnibox omnibox-adapter" || echo "bytebot-desktop") \
         bytebot-agent \
         bytebot-ui \
-        $([ "$COMPOSE_FILE" = "docker-compose.proxy.yml" ] && echo "bytebot-llm-proxy" || echo "")
+        $([ "$USING_PROXY" = true ] && echo "bytebot-llm-proxy" || echo "")
 
     echo ""
     echo -e "${BLUE}Starting services...${NC}"
 
     # For Windows: start in background and monitor
     if [ "$DESKTOP_PLATFORM" = "windows" ]; then
-        docker compose $PROFILE_ARG -f $COMPOSE_FILE -f docker-compose.override.yml up -d --no-deps \
+        docker compose $PROFILE_ARG $COMPOSE_FILES up -d --no-deps \
             omnibox omnibox-adapter \
             bytebot-agent \
             bytebot-ui \
             postgres \
-            $([ "$COMPOSE_FILE" = "docker-compose.proxy.yml" ] && echo "bytebot-llm-proxy" || echo "") &
+            $([ "$USING_PROXY" = true ] && echo "bytebot-llm-proxy" || echo "") &
         COMPOSE_PID=$!
 
         cd ..
@@ -404,22 +449,25 @@ if [[ "$ARCH" == "arm64" ]] && [[ "$PLATFORM" == "macOS" ]]; then
         echo -e "  ${BLUE}./scripts/monitor-omnibox.sh${NC}"
         echo ""
     else
-        docker compose $PROFILE_ARG -f $COMPOSE_FILE -f docker-compose.override.yml up -d --no-deps \
+        docker compose $PROFILE_ARG $COMPOSE_FILES up -d --no-deps \
             bytebot-desktop \
             bytebot-agent \
             bytebot-ui \
             postgres \
-            $([ "$COMPOSE_FILE" = "docker-compose.proxy.yml" ] && echo "bytebot-llm-proxy" || echo "")
+            $([ "$USING_PROXY" = true ] && echo "bytebot-llm-proxy" || echo "")
         cd ..
     fi
 else
-    # Linux and Windows (WSL) - build everything including OmniParser
+    # DGX Spark, ARM64 generic, x86_64 - build everything including OmniParser
     echo -e "${BLUE}Building all services including OmniParser...${NC}"
+    if [ "$BYTEBOT_ARM64_PLATFORM" = "dgx_spark" ]; then
+        echo -e "${GREEN}  → Using ARM64 + CUDA optimizations${NC}"
+    fi
 
     # For Windows: start docker compose in background, then monitor progress
     if [ "$DESKTOP_PLATFORM" = "windows" ]; then
         # Start docker compose in background (will wait for health checks)
-        docker compose $PROFILE_ARG -f $COMPOSE_FILE -f docker-compose.override.yml up -d --build &
+        docker compose $PROFILE_ARG $COMPOSE_FILES up -d --build &
         COMPOSE_PID=$!
 
         cd ..
@@ -443,8 +491,8 @@ else
         echo -e "  ${BLUE}./scripts/monitor-omnibox.sh${NC}"
         echo ""
     else
-        # Linux: run docker compose normally (foreground)
-        docker compose $PROFILE_ARG -f $COMPOSE_FILE -f docker-compose.override.yml up -d --build
+        # Linux/ARM64: run docker compose normally (foreground)
+        docker compose $PROFILE_ARG $COMPOSE_FILES up -d --build
         cd ..
     fi
 fi

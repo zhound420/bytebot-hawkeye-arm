@@ -1,6 +1,20 @@
-# Bytebot Hawkeye - Build & Deployment Scripts
+# Bytebot Hawkeye ARM64 - Build & Deployment Scripts
 
-This directory contains scripts to set up, build, and manage Bytebot Hawkeye stack.
+This directory contains scripts to set up, build, and manage Bytebot Hawkeye on ARM64 platforms.
+
+## 🎯 ARM64-Optimized Workflow (2025)
+
+**Unified Entry Points:**
+- **`./scripts/start.sh`** - Unified startup script (replaces `start-stack.sh`)
+- **`./scripts/fresh-build.sh`** - Complete fresh build with ARM64 detection
+
+**Platform Detection:**
+- **`./scripts/detect-arm64-platform.sh`** - Detects: Apple Silicon, DGX Spark, Generic ARM64
+
+**Deprecated:**
+- ~~`start-stack.sh`~~ → Forwards to `start.sh` (legacy version in `scripts/legacy/`)
+
+---
 
 ## Quick Start
 

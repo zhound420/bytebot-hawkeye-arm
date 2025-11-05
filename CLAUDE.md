@@ -189,65 +189,76 @@ docker compose -f docker/docker-compose.yml --profile omnibox up -d
 
 ## Quick Start
 
-**Simple 3-step setup:**
+**Automated ARM64-optimized setup:**
 
 ```bash
-# 1. Install dependencies
-npm install
+# Option 1: Fresh build (recommended for first-time setup)
+./scripts/fresh-build.sh
+# - Auto-detects: Apple Silicon, DGX Spark, or Generic ARM64
+# - Builds: shared → bytebot-cv → setup OmniParser → Docker services
+# - Prompts for: Desktop platform, LMStudio/Ollama setup
 
-# 2. Build packages (shared → bytebot-cv → services)
-cd packages/shared && npm run build
-cd ../bytebot-cv && npm install && npm run build
-
-# 3. Setup OmniParser (auto-detects Apple Silicon vs x86_64/NVIDIA)
-./scripts/setup-omniparser.sh
-
-# 4. Start stack (auto-detects Linux/Windows platform)
+# Option 2: Quick start (after fresh build)
 ./scripts/start.sh
+# - Auto-detects ARM64 platform and starts appropriate services
+# - Apple Silicon: Starts native OmniParser + Docker
+# - DGX Spark: Full Docker with ARM64 + CUDA
+# - Generic ARM64: Full Docker with CPU fallback
 ```
 
-**The new `start.sh` script automatically:**
-- Detects your host platform (Linux, macOS, Windows)
-- Checks for KVM support (needed for Windows desktop VM)
-- Selects the appropriate Docker Compose profile
-- Configures environment variables
-- Starts the stack with the correct desktop service
+**The unified `start.sh` script automatically:**
+- **ARM64 Detection:** Uses `detect-arm64-platform.sh` for platform identification
+- **Apple Silicon:** Starts native OmniParser with MPS GPU (~1-2s/frame)
+- **DGX Spark:** Uses Docker with ARM64 + CUDA optimizations (~0.8-1.5s/frame)
+- **Generic ARM64:** Docker with CPU fallback (~8-15s/frame)
+- **x86_64:** Docker with CUDA (if available) or CPU
+- **Desktop Selection:** Linux desktop (default) or Windows 11 VM (if KVM available)
 
-**Manual platform selection:**
+**Force options:**
 ```bash
-# Force Linux desktop (default, recommended)
-BYTEBOT_FORCE_PLATFORM=linux ./scripts/start.sh
-
-# Force Windows desktop (requires KVM + Tiny11 ISO)
-BYTEBOT_FORCE_PLATFORM=windows ./scripts/start.sh
+# Force desktop platform
+BYTEBOT_FORCE_DESKTOP=linux ./scripts/start.sh      # Linux desktop
+BYTEBOT_FORCE_DESKTOP=windows ./scripts/start.sh    # Windows VM (requires KVM + ISO)
 ```
 
-### What Happens Automatically
+### Platform-Specific Workflows
 
-**On Apple Silicon (M1-M4):**
-- Sets up native OmniParser with MPS GPU (~1-2s/frame)
-- Configures Docker to connect to native service
-- Best performance: GPU-accelerated
+**Apple Silicon (M1-M4):**
+- Native OmniParser runs outside Docker (MPS GPU access)
+- Docker services connect via `host.docker.internal:9989`
+- Hybrid deployment: Native OmniParser + Dockerized services
+- See: `DEPLOYMENT_M4.md`
 
-**On x86_64 + NVIDIA GPU:**
-- Uses Docker container with CUDA (~0.6s/frame)
-- Auto-detects and uses GPU
-- Production-ready setup
+**DGX Spark (ARM64 + CUDA):**
+- Full Docker deployment with `docker-compose.arm64.yml` overlay
+- CUDA-enabled OmniParser container on ARM64
+- Optimized batch sizes for GPU throughput
+- See: `DEPLOYMENT_DGX_SPARK.md`
 
-**On x86_64 CPU-only:**
-- Uses Docker container with CPU (~8-15s/frame)
-- Works everywhere, slower performance
+**Generic ARM64 / x86_64:**
+- Standard Docker deployment
+- CPU-only OmniParser (slower but compatible)
+- See: `ARCHITECTURE_ARM64.md`
 
-### Manual Control
+### Manual Service Control
 
 ```bash
-# Apple Silicon only: Start/stop native OmniParser
+# Platform detection (diagnostic)
+./scripts/detect-arm64-platform.sh
+
+# Apple Silicon: Native OmniParser
 ./scripts/start-omniparser.sh  # Start with MPS GPU
 ./scripts/stop-omniparser.sh   # Stop
 
-# Stop entire stack
-./scripts/stop-stack.sh
+# All platforms: Stop stack
+./scripts/stop-stack.sh  # Stops Docker + native OmniParser (if running)
 ```
+
+### Script Migration Note
+
+**⚠️ `start-stack.sh` is deprecated** - now forwards to `start.sh`
+- All functionality merged into unified `start.sh`
+- Legacy version preserved at `scripts/legacy/start-stack.sh.legacy`
 
 ## Development Commands
 
