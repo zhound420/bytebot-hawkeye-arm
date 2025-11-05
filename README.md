@@ -29,6 +29,53 @@ This is the **ARM64-optimized variant** of Bytebot Hawkeye, specifically designe
 - **Power Efficiency**: Lower power consumption vs x86_64 while maintaining performance
 - **Future-Proof**: ARM64 is the future for AI workloads (Apple, NVIDIA, AWS Graviton)
 
+### Prerequisites
+
+#### System Requirements
+
+- **Architecture**: ARM64 (Apple Silicon M1-M4, NVIDIA DGX Spark, or Generic ARM64)
+- **RAM**: 16GB minimum, 32GB+ recommended for production
+- **Storage**: 20GB free space (10GB for models + 10GB for services)
+
+#### Required Software
+
+**Core Dependencies:**
+- **Node.js** ≥20.0.0 - [Download](https://nodejs.org/)
+- **Git** - For cloning the repository
+- **Docker**:
+  - **macOS**: Docker Desktop 4.25+ with ARM64 support - [Download](https://www.docker.com/products/docker-desktop)
+  - **Linux**: Docker + nvidia-container-toolkit (for GPU) - [Install Guide](https://docs.docker.com/engine/install/)
+  - **DGX Spark**: Preinstalled (DGX OS includes Docker + NVIDIA Container Runtime)
+
+**Optional (Platform-Specific):**
+- **Python 3.12** - Only for Apple Silicon native OmniParser (MPS GPU acceleration)
+
+#### Required API Keys
+
+At least **one** LLM provider API key:
+- **Anthropic** (Claude models) - [Get key](https://console.anthropic.com)
+- **OpenAI** (GPT models) - [Get key](https://platform.openai.com)
+- **Google** (Gemini models) - [Get key](https://aistudio.google.com)
+- **OpenRouter** (Multi-model proxy) - [Get key](https://openrouter.ai)
+
+#### Platform-Specific Notes
+
+| Platform | Requirements | Notes |
+|----------|-------------|-------|
+| **Apple Silicon** | Docker Desktop + Python 3.12 | Native OmniParser uses MPS GPU (~1-2s/frame) |
+| **DGX Spark** | Pre-configured | Everything ready out-of-box with CUDA (~0.8-1.5s/frame) |
+| **Generic ARM64** | Docker only | CPU-only OmniParser (~8-15s/frame, slower) |
+
+#### Quick Verification
+
+```bash
+# Check prerequisites
+node --version        # Should be v20.x.x or higher
+docker --version      # Docker installed
+python3 --version     # 3.12.x (Apple Silicon only)
+uname -m              # Should show: arm64 or aarch64
+```
+
 ### Installation
 
 ```bash
@@ -54,49 +101,72 @@ npm install
 
 ## 📦 Quick Start
 
-### Platform Detection
+### Automated Setup (Recommended)
 
-First, detect your ARM64 platform and get deployment recommendations:
+**Option 1: Fresh Build (First-Time Setup)**
 
 ```bash
+# One command does everything
+./scripts/fresh-build.sh
+
+# What it does:
+# - Auto-detects: Apple Silicon, DGX Spark, or Generic ARM64
+# - Builds: shared → bytebot-cv → OmniParser → Docker services
+# - Prompts: Desktop platform, LMStudio/Ollama setup
+# - Starts: All services with platform-specific optimizations
+```
+
+**Option 2: Quick Start (After Fresh Build)**
+
+```bash
+# Quick restart of services
+./scripts/start.sh
+
+# What it does:
+# - Auto-detects ARM64 platform
+# - Apple Silicon: Starts native OmniParser + Docker services
+# - DGX Spark: Full Docker with ARM64 + CUDA
+# - Generic ARM64: Full Docker with CPU fallback
+```
+
+### Platform Detection (Diagnostic)
+
+```bash
+# Identify your ARM64 platform
 ./scripts/detect-arm64-platform.sh
+
+# Output shows:
+# - Platform type (Apple Silicon / DGX Spark / Generic ARM64)
+# - GPU availability (MPS / CUDA / CPU)
+# - Recommended deployment mode
+# - Expected performance
 ```
 
-This will identify your system (Apple Silicon / DGX Spark / Generic ARM64) and provide tailored setup instructions.
+### What Happens Automatically
 
-### Apple Silicon (M1-M4) Setup
+| Platform | Deployment | OmniParser | Docker Services |
+|----------|-----------|------------|-----------------|
+| **Apple Silicon** | Hybrid | Native with MPS GPU (~1-2s/frame) | ✅ All other services |
+| **DGX Spark** | Full Docker | Container with CUDA (~0.8-1.5s/frame) | ✅ All services |
+| **Generic ARM64** | Full Docker | Container with CPU (~8-15s/frame) | ✅ All services |
 
-For **best performance** on Apple Silicon, run OmniParser **natively** (Docker can't access MPS GPU):
+### Manual Service Control
 
 ```bash
-# 1. Install dependencies
-npm install
+# Stop all services
+./scripts/stop-stack.sh
 
-# 2. Setup native OmniParser with MPS GPU
-cd packages/bytebot-omniparser
-bash scripts/setup.sh  # Auto-detects Apple Silicon, installs with MPS support
-python src/server.py   # Starts on http://localhost:9989
-
-# 3. In another terminal, start other services in Docker
-cd ../../
-docker compose -f docker/docker-compose.proxy.yml up -d
+# Apple Silicon only: Manage native OmniParser
+./scripts/start-omniparser.sh  # Start with MPS GPU
+./scripts/stop-omniparser.sh   # Stop
 ```
 
-**See [DEPLOYMENT_M4.md](DEPLOYMENT_M4.md) for detailed M4 Pro/Max/Ultra guide**
+### Platform-Specific Guides
 
-### NVIDIA DGX Spark Setup
-
-DGX Spark supports **full GPU acceleration in Docker** (ARM64 + CUDA):
-
-```bash
-# Everything runs in Docker with GPU passthrough
-docker compose -f docker/docker-compose.proxy.yml up -d
-
-# Or use ARM64-specific overrides
-docker compose -f docker/docker-compose.proxy.yml -f docker/docker-compose.arm64.yml up -d
-```
-
-**See [DEPLOYMENT_DGX_SPARK.md](DEPLOYMENT_DGX_SPARK.md) for DGX Spark optimization guide**
+For detailed setup and optimization:
+- **Apple Silicon (M1-M4)**: See [DEPLOYMENT_M4.md](DEPLOYMENT_M4.md)
+- **DGX Spark**: See [DEPLOYMENT_DGX_SPARK.md](DEPLOYMENT_DGX_SPARK.md)
+- **Architecture Details**: See [ARCHITECTURE_ARM64.md](ARCHITECTURE_ARM64.md)
 
 ---
 
