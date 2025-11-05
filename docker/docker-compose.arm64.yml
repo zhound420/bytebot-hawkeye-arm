@@ -1,0 +1,60 @@
+# ARM64-Specific Docker Compose Override
+# Use with: docker compose -f docker-compose.proxy.yml -f docker-compose.arm64.yml up -d
+#
+# This file contains ARM64-specific configurations for:
+# - Apple Silicon (M1-M4): Optimizations for macOS Docker Desktop
+# - NVIDIA DGX Spark: ARM64 + CUDA configurations
+# - Generic ARM64: Fallback configurations
+
+name: bytebot
+
+services:
+  # Force ARM64 platform for all services
+  bytebot-omniparser:
+    platform: linux/arm64
+    environment:
+      # DGX Spark: Use CUDA on ARM64
+      # Apple Silicon: Run natively instead (Docker can't access MPS)
+      - OMNIPARSER_DEVICE=${OMNIPARSER_DEVICE:-auto}  # Auto-detect cuda or cpu
+
+    # DGX Spark GPU support (same as x86_64)
+    runtime: nvidia
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu, compute, utility]
+
+  bytebot-desktop:
+    platform: linux/arm64
+    # Use less privileged mode on macOS if needed
+    # privileged: ${BYTEBOT_DESKTOP_PRIVILEGED:-true}
+
+  bytebot-agent:
+    platform: linux/arm64
+
+  bytebot-ui:
+    platform: linux/arm64
+
+  bytebot-llm-proxy:
+    platform: linux/arm64
+
+  omnibox-adapter:
+    platform: linux/arm64
+
+  # Note: postgres pgvector/pgvector:pg16 supports ARM64 natively
+  postgres:
+    platform: linux/arm64
+
+# Volumes remain the same across architectures
+volumes:
+  postgres_data:
+  omniparser_weights:
+  omnibox_data:
+
+# Networks remain the same
+networks:
+  bytebot-network:
+    driver: bridge

@@ -191,15 +191,16 @@ done
 log_info "Updating litellm-config.yaml..."
 
 # Remove old Ollama auto-generated entries (between markers)
-sed -i.tmp '/# Ollama VLM models (auto-discovered)/,/^litellm_settings:/{ /^litellm_settings:/!d; }' "$CONFIG_FILE"
+# Strategy: Delete from first Ollama marker to litellm_settings (keep litellm_settings line)
+sed -i.tmp '/# Ollama VLM models/,/^litellm_settings:/{/^litellm_settings:/!d;}' "$CONFIG_FILE"
 
 # Also remove any stray auto-discovered entries from previous runs
-sed -i.tmp '/# Add local models via Ollama/,/^litellm_settings:/{ /^litellm_settings:/!d; }' "$CONFIG_FILE"
+sed -i.tmp '/# Add local models via Ollama/,/^litellm_settings:/{/^litellm_settings:/!d;}' "$CONFIG_FILE"
 
 # Insert new models before litellm_settings
 TIMESTAMP=$(date +"%Y-%m-%d %H:%M:%S")
 sed -i.tmp '/^litellm_settings:/i\  # Ollama VLM models (auto-discovered on '"${TIMESTAMP}"')' "$CONFIG_FILE"
-sed -i.tmp "/# Ollama VLM models/r $TEMP_MODELS" "$CONFIG_FILE"
+sed -i.tmp "/# Ollama VLM models (auto-discovered on ${TIMESTAMP})/r $TEMP_MODELS" "$CONFIG_FILE"
 
 rm -f "${CONFIG_FILE}.tmp" "$TEMP_MODELS"
 

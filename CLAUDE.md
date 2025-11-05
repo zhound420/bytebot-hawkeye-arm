@@ -2,6 +2,40 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## 🏗️ **ARM64-Optimized Repository**
+
+**This is the ARM64-focused variant of Bytebot Hawkeye**, specifically optimized for:
+
+- **🍎 Apple Silicon (M1-M4)** - MPS GPU acceleration via native execution
+- **⚡ NVIDIA DGX Spark** - ARM64 + CUDA in Docker containers
+- **🔧 Generic ARM64** - CPU fallback support
+
+### Key ARM64 Differences from Main Repository
+
+1. **Platform Detection**: Auto-detects Apple Silicon vs DGX Spark vs Generic ARM64
+2. **GPU Backend Selection**: Supports MPS (Apple), CUDA (DGX Spark), and CPU fallback
+3. **Hybrid Deployment**: Native OmniParser on M4 (for MPS), full Docker on DGX Spark
+4. **Multi-Architecture Docker**: Builds for linux/arm64 and linux/amd64
+
+### ARM64-Specific Documentation
+
+- **[README.md](README.md)** - ARM64-focused introduction and quick start
+- **[DEPLOYMENT_M4.md](DEPLOYMENT_M4.md)** - Apple Silicon (M1-M4) deployment guide
+- **[DEPLOYMENT_DGX_SPARK.md](DEPLOYMENT_DGX_SPARK.md)** - NVIDIA DGX Spark deployment guide
+- **[ARCHITECTURE_ARM64.md](ARCHITECTURE_ARM64.md)** - Technical architecture details
+
+### Quick Platform Detection
+
+```bash
+# Detect your ARM64 platform
+./scripts/detect-arm64-platform.sh
+
+# Outputs: apple_silicon, dgx_spark, or arm64_generic
+# Provides platform-specific setup instructions
+```
+
+---
+
 ## 🎯 Recent Changes: OpenCV Removed
 
 **OpenCV has been completely removed from the codebase** to reduce complexity and improve maintainability. The system now relies on:

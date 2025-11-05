@@ -166,16 +166,21 @@ services:
       dockerfile: Dockerfile
     container_name: bytebot-omniparser
     restart: unless-stopped
-    platform: linux/amd64
+    # Multi-architecture support: ARM64 (Apple Silicon/DGX Spark) + AMD64 (x86_64)
+    # Uncomment platform to force specific architecture, otherwise Docker auto-detects
+    # platform: linux/arm64  # Force ARM64 for DGX Spark or Apple Silicon
+    # platform: linux/amd64  # Force AMD64 for x86_64
     ports:
       - "9989:9989"
     environment:
       - OMNIPARSER_HOST=0.0.0.0
       - OMNIPARSER_PORT=9989
-      # Device auto-detection: 'auto' detects cuda/cpu in container
-      # On Apple Silicon: Docker uses CPU (MPS not available in containers)
-      # On NVIDIA: Docker uses CUDA if nvidia-docker runtime available
-      # Override with: cpu, cuda
+      # Device auto-detection: 'auto' detects cuda/mps/cpu
+      # ARM64 platforms:
+      #   - Apple Silicon (M1-M4): Run NATIVELY for MPS GPU (Docker uses CPU only)
+      #   - DGX Spark: CUDA available in Docker (full GPU acceleration)
+      # AMD64 (x86_64): CUDA available if nvidia-docker runtime installed
+      # Override with: cpu, cuda, mps (mps only works native, not in Docker)
       - OMNIPARSER_DEVICE=${OMNIPARSER_DEVICE:-auto}
       - OMNIPARSER_MIN_CONFIDENCE=${OMNIPARSER_MIN_CONFIDENCE:-0.3}
       - OMNIPARSER_MODEL_DTYPE=${OMNIPARSER_MODEL_DTYPE:-float16}
