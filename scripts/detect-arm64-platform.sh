@@ -110,6 +110,12 @@ echo -e "Deployment Mode:    ${GREEN}$RECOMMENDED_DEPLOYMENT${NC}"
 echo ""
 
 # Export environment variables for other scripts
+# Actually export for scripts that source this file
+export BYTEBOT_ARM64_PLATFORM="$PLATFORM"
+export BYTEBOT_GPU_TYPE="$GPU_TYPE"
+export BYTEBOT_DEPLOYMENT_MODE="$RECOMMENDED_DEPLOYMENT"
+
+# Also print for manual evaluation if needed
 echo "# Platform detection results (source this file)"
 echo "export BYTEBOT_ARM64_PLATFORM=\"$PLATFORM\""
 echo "export BYTEBOT_GPU_TYPE=\"$GPU_TYPE\""
