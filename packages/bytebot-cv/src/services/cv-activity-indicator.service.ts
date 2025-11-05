@@ -118,7 +118,10 @@ export class CVActivityIndicatorService extends EventEmitter {
 
     this.emit('activityUpdate', this.getSnapshot());
 
-    this.logger.debug(`Started CV method: ${methodName} (${activityId})`);
+    this.logger.debug(
+      `Started CV method: ${methodName} (${activityId})` +
+      (metadata ? ` with metadata: ${JSON.stringify(metadata)}` : ''),
+    );
     return activityId;
   }
 
@@ -171,13 +174,18 @@ export class CVActivityIndicatorService extends EventEmitter {
     if (activity) {
       activity.metadata = { ...activity.metadata, ...metadata };
       this.emit('activityUpdate', this.getSnapshot());
+      this.logger.debug(
+        `Updated ${activity.method} metadata: ${JSON.stringify(metadata)}`,
+      );
+    } else {
+      this.logger.warn(`Cannot update metadata for unknown activity: ${activityId}`);
     }
   }
 
   /**
    * Get current activity snapshot for UI display
    */
-  getSnapshot(): CVActivitySnapshot {
+  async getSnapshot(): Promise<CVActivitySnapshot> {
     const activeMethodsArray = Array.from(this.activeMethods.values());
     const activeMethods = activeMethodsArray.map(a => a.method);
 
@@ -223,12 +231,23 @@ export class CVActivityIndicatorService extends EventEmitter {
 
     // Removed noisy debug log - activity is tracked via /cv-activity endpoints instead
 
-    // Get OmniParser model info if available
-    const modelStatus = this.omniParserClient?.getModelStatus();
-    const omniparserModels = modelStatus ? {
-      iconDetector: modelStatus.icon_detector.type,
-      captionModel: modelStatus.caption_model.type,
-    } : undefined;
+    // Get OmniParser model info if available (ensure fetched even if late startup)
+    const modelStatus = await this.omniParserClient?.ensureModelStatus();
+    const omniparserModels = modelStatus
+      ? {
+          iconDetector: modelStatus.icon_detector.type,
+          captionModel: modelStatus.caption_model.type,
+        }
+      : undefined;
+
+    // Debug logging for CV activity panel troubleshooting
+    if (activeMethods.length > 0 || omniparserDevice) {
+      this.logger.debug(
+        `CV Activity Snapshot: ${activeMethods.length} active methods, ` +
+        `device=${omniparserDevice || 'none'}, ` +
+        `models=${omniparserModels ? `${omniparserModels.iconDetector}+${omniparserModels.captionModel}` : 'none'}`,
+      );
+    }
 
     return {
       activeMethods,

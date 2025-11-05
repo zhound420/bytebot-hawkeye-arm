@@ -132,11 +132,16 @@ export class OmniParserClientService {
         const data = await response.json();
         this.isHealthy = data.status === 'healthy' && data.models_loaded;
 
-        // Fetch model status if healthy
+        // Fetch model status if healthy (AWAIT to prevent race condition)
         if (this.isHealthy && !this.modelStatus) {
-          this.fetchModelStatus().catch((err) => {
+          try {
+            await this.fetchModelStatus();
+            this.logger.log(
+              `OmniParser model status initialized: Icon=${this.modelStatus?.icon_detector?.type}, Caption=${this.modelStatus?.caption_model?.type}`,
+            );
+          } catch (err) {
             this.logger.warn(`Failed to fetch model status: ${err.message}`);
-          });
+          }
         }
 
         return this.isHealthy;
@@ -181,6 +186,44 @@ export class OmniParserClientService {
    * Get cached model status
    */
   getModelStatus(): OmniParserModelStatus | null {
+    return this.modelStatus;
+  }
+
+  /**
+   * Ensure model status is fetched (fetch if not cached)
+   * Useful for lazy initialization when OmniParser starts late
+   */
+  async ensureModelStatus(): Promise<OmniParserModelStatus | null> {
+    if (this.modelStatus) {
+      this.logger.debug('Model status already cached');
+      return this.modelStatus;
+    }
+
+    this.logger.debug('Model status not cached, checking health...');
+
+    // Check if service is healthy first
+    if (!this.isHealthy) {
+      const healthy = await this.checkHealth();
+      if (!healthy) {
+        this.logger.warn('Cannot ensure model status: service unhealthy');
+        return null;
+      }
+    }
+
+    // Fetch if still not available
+    if (!this.modelStatus) {
+      this.logger.debug('Fetching model status...');
+      await this.fetchModelStatus();
+    }
+
+    if (this.modelStatus) {
+      this.logger.log(
+        `Model status ensured: Icon=${this.modelStatus.icon_detector.type}, Caption=${this.modelStatus.caption_model.type}`,
+      );
+    } else {
+      this.logger.warn('Failed to ensure model status after fetch');
+    }
+
     return this.modelStatus;
   }
 

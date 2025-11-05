@@ -11,8 +11,8 @@ export class CVActivityController {
    * Get current CV activity snapshot
    */
   @Get('status')
-  getActivityStatus() {
-    return this.cvActivityService.getSnapshot();
+  async getActivityStatus() {
+    return await this.cvActivityService.getSnapshot();
   }
 
   /**
@@ -38,10 +38,10 @@ export class CVActivityController {
    * Simple polling endpoint for CV activity updates (replaces SSE for compatibility)
    */
   @Get('stream')
-  streamActivity() {
+  async streamActivity() {
     return {
       timestamp: Date.now(),
-      ...this.cvActivityService.getSnapshot()
+      ...(await this.cvActivityService.getSnapshot())
     };
   }
 
@@ -49,11 +49,12 @@ export class CVActivityController {
    * Check if any CV methods are currently active
    */
   @Get('active')
-  isActive() {
+  async isActive() {
+    const snapshot = await this.cvActivityService.getSnapshot();
     return {
       active: this.cvActivityService.hasActiveMethods(),
-      activeCount: this.cvActivityService.getSnapshot().totalActiveCount,
-      activeMethods: this.cvActivityService.getSnapshot().activeMethods
+      activeCount: snapshot.totalActiveCount,
+      activeMethods: snapshot.activeMethods
     };
   }
 
