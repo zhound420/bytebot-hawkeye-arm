@@ -136,7 +136,7 @@ RUN ARCH=$(dpkg --print-architecture) && \
         apt-get update && apt-get install -y code && \
         apt-get clean && rm -rf /var/lib/apt/lists/* ; \
     elif [ "$ARCH" = "arm64" ]; then \
-        apt-get update && apt-get install -y wget gpg && \
+        apt-get update && apt-get install -y wget gpg ca-certificates && \
         wget -qO /tmp/code_arm64.deb https://update.code.visualstudio.com/latest/linux-deb-arm64/stable && \
         apt-get install -y /tmp/code_arm64.deb && \
         rm -f /tmp/code_arm64.deb && \
