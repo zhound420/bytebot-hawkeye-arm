@@ -82,20 +82,30 @@ async def lifespan(app: FastAPI):
     import torch
 
     print("=" * 50)
-    print("Bytebot OmniParser Service Starting")
+    print("Bytebot OmniParser ARM64-Optimized Service Starting")
     print("=" * 50)
     print(f"Device: {settings.device}")
     print(f"Port: {settings.port}")
     print(f"Weights: {settings.weights_dir}")
     print("")
-    print("GPU Diagnostics:")
+    print("GPU/Accelerator Diagnostics:")
     print(f"  PyTorch Version: {torch.__version__}")
+
+    # Check CUDA (NVIDIA GPUs - x86_64 and DGX Spark ARM64)
     print(f"  CUDA Available: {torch.cuda.is_available()}")
     if torch.cuda.is_available():
         print(f"  CUDA Version: {torch.version.cuda}")
         print(f"  GPU Count: {torch.cuda.device_count()}")
         for i in range(torch.cuda.device_count()):
             print(f"  GPU {i}: {torch.cuda.get_device_name(i)}")
+
+    # Check MPS (Apple Silicon - M1-M4, native execution only)
+    if hasattr(torch.backends, "mps"):
+        mps_available = torch.backends.mps.is_available()
+        print(f"  MPS (Apple Silicon) Available: {mps_available}")
+        if not mps_available and not torch.cuda.is_available():
+            print(f"    Note: MPS not available in Docker - run natively for M4 GPU")
+
     print("=" * 50)
 
     try:
