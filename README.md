@@ -4,6 +4,8 @@
 
 # Bytebot Hawkeye: Precision AI Desktop Agent
 
+[![GitHub](https://img.shields.io/badge/GitHub-bytebot--hawkeye--arm-blue?logo=github)](https://github.com/zhound420/bytebot-hawkeye-arm)
+
 **An AI desktop agent with enhanced targeting, GPU-accelerated computer vision, and 89% click accuracy**
 
 [![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/bytebot?referralCode=L9lKXQ)
@@ -103,8 +105,8 @@ docker run --rm --gpus all nvidia/cuda:11.8.0-base-ubuntu22.04 nvidia-smi
 
 ### Step 1: Clone Repository
 ```bash
-git clone https://github.com/zhound420/bytebot-hawkeye-op.git
-cd bytebot-hawkeye-op
+git clone https://github.com/zhound420/bytebot-hawkeye-arm.git
+cd bytebot-hawkeye-arm
 ```
 
 ### Step 2: Configure API Keys
