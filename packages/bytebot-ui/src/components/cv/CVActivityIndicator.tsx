@@ -198,8 +198,8 @@ export function CVActivityIndicator({ className, compact = false, inline = false
 
     shouldShow = hasActiveWork || hasDetectionHistory || hasClickHistory;
   } else {
-    // For status card (top), show if any activity or device info
-    shouldShow = Boolean(activity && (activity.totalActiveCount > 0 || hasRecentActivity || hasDeviceInfo || hasModelInfo));
+    // For status card (top), show if model info available (persistent) or any activity
+    shouldShow = Boolean(activity && (hasModelInfo || hasDeviceInfo || activity.totalActiveCount > 0 || hasRecentActivity));
   }
 
   if (!shouldShow) {
