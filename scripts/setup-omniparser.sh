@@ -91,20 +91,40 @@ if [[ "$ARCH" == "arm64" ]] && [[ "$OS" == "Darwin" ]]; then
     echo "Performance: ~1-2s per frame with MPS GPU 🚀"
     echo ""
 
-elif [[ "$ARCH" == "x86_64" ]] || [[ "$ARCH" == "amd64" ]]; then
-    echo -e "${GREEN}✓ x86_64 detected${NC}"
+elif [[ "$ARCH" == "x86_64" ]] || [[ "$ARCH" == "amd64" ]] || [[ "$ARCH" == "aarch64" ]]; then
+    # Handle x86_64 and aarch64 (Linux ARM64) architectures
+    if [[ "$ARCH" == "aarch64" ]]; then
+        echo -e "${GREEN}✓ Linux ARM64 (aarch64) detected${NC}"
 
-    # Check for NVIDIA GPU
-    if command -v nvidia-smi &> /dev/null; then
-        echo -e "${GREEN}✓ NVIDIA GPU detected${NC}"
-        nvidia-smi --query-gpu=name --format=csv,noheader | head -1
-        echo ""
-        echo -e "${YELLOW}→ Docker container with CUDA recommended${NC}"
-        DOCKER_COMPOSE_EXTRA=""
+        # Check for NVIDIA GPU (DGX Spark or similar)
+        if command -v nvidia-smi &> /dev/null; then
+            echo -e "${GREEN}✓ NVIDIA GPU detected (DGX Spark or similar)${NC}"
+            nvidia-smi --query-gpu=name --format=csv,noheader | head -1
+            CUDA_VERSION=$(nvidia-smi --query-gpu=driver_version --format=csv,noheader | head -1)
+            echo -e "${GREEN}✓ CUDA Driver Version: $CUDA_VERSION${NC}"
+            echo ""
+            echo -e "${YELLOW}→ Docker container with CUDA on ARM64${NC}"
+            DOCKER_COMPOSE_EXTRA=""
+        else
+            echo -e "${YELLOW}⚠ No NVIDIA GPU detected${NC}"
+            echo -e "${YELLOW}→ Docker container with CPU will be used${NC}"
+            DOCKER_COMPOSE_EXTRA=""
+        fi
     else
-        echo -e "${YELLOW}⚠ No NVIDIA GPU detected${NC}"
-        echo -e "${YELLOW}→ Docker container with CPU will be used${NC}"
-        DOCKER_COMPOSE_EXTRA=""
+        echo -e "${GREEN}✓ x86_64 detected${NC}"
+
+        # Check for NVIDIA GPU
+        if command -v nvidia-smi &> /dev/null; then
+            echo -e "${GREEN}✓ NVIDIA GPU detected${NC}"
+            nvidia-smi --query-gpu=name --format=csv,noheader | head -1
+            echo ""
+            echo -e "${YELLOW}→ Docker container with CUDA recommended${NC}"
+            DOCKER_COMPOSE_EXTRA=""
+        else
+            echo -e "${YELLOW}⚠ No NVIDIA GPU detected${NC}"
+            echo -e "${YELLOW}→ Docker container with CPU will be used${NC}"
+            DOCKER_COMPOSE_EXTRA=""
+        fi
     fi
 
     # Update docker/.env.defaults
@@ -141,7 +161,12 @@ elif [[ "$ARCH" == "x86_64" ]] || [[ "$ARCH" == "amd64" ]]; then
     echo -e "   ${BLUE}./scripts/start-stack.sh${NC}"
     echo ""
     if command -v nvidia-smi &> /dev/null; then
-        echo "Performance: ~0.6s per frame with CUDA GPU 🚀"
+        if [[ "$ARCH" == "aarch64" ]]; then
+            echo "Performance: ~0.8-1.5s per frame with CUDA GPU on ARM64 🚀"
+            echo "Note: CUDA 12.1 PyTorch is compatible with CUDA 13.0 driver"
+        else
+            echo "Performance: ~0.6s per frame with CUDA GPU 🚀"
+        fi
     else
         echo "Performance: ~8-15s per frame with CPU"
     fi
