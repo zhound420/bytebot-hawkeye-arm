@@ -25,6 +25,51 @@ if [ -f "docker/.env.defaults" ]; then
 fi
 
 #  ═══════════════════════════════════════════════════════
+#   Environment Setup
+#  ═══════════════════════════════════════════════════════
+
+echo -e "${BLUE}Step 1: Environment configuration...${NC}"
+
+# Create docker/.env if it doesn't exist
+if [ ! -f "docker/.env" ]; then
+    if [ -f "docker/.env.example" ]; then
+        cp docker/.env.example docker/.env
+        echo -e "${GREEN}✓ Created docker/.env from template${NC}"
+        echo -e "${YELLOW}  You can configure API keys via CLI (prompted later) or UI Settings${NC}"
+    else
+        echo -e "${YELLOW}⚠ docker/.env.example not found, creating empty docker/.env${NC}"
+        touch docker/.env
+    fi
+else
+    echo -e "${GREEN}✓ docker/.env already exists${NC}"
+fi
+
+# Generate SETTINGS_ENCRYPTION_KEY if not present in .env.defaults
+if ! grep -q "SETTINGS_ENCRYPTION_KEY=" docker/.env.defaults 2>/dev/null; then
+    echo -e "${BLUE}Generating encryption key for API key storage...${NC}"
+
+    # Generate secure random 32-character hex key
+    if command -v openssl &> /dev/null; then
+        ENCRYPTION_KEY=$(openssl rand -hex 16)
+    else
+        # Fallback: use /dev/urandom
+        ENCRYPTION_KEY=$(cat /dev/urandom | tr -dc 'a-f0-9' | fold -w 32 | head -n 1)
+    fi
+
+    # Append to .env.defaults
+    echo "" >> docker/.env.defaults
+    echo "# API Key Encryption (auto-generated)" >> docker/.env.defaults
+    echo "SETTINGS_ENCRYPTION_KEY=${ENCRYPTION_KEY}" >> docker/.env.defaults
+
+    echo -e "${GREEN}✓ Generated SETTINGS_ENCRYPTION_KEY${NC}"
+    echo -e "${YELLOW}  This key encrypts API keys stored via the UI Settings dialog${NC}"
+else
+    echo -e "${GREEN}✓ SETTINGS_ENCRYPTION_KEY already configured${NC}"
+fi
+
+echo ""
+
+#  ═══════════════════════════════════════════════════════
 #   ARM64 Platform Detection
 #  ═══════════════════════════════════════════════════════
 
@@ -83,7 +128,7 @@ esac
 echo ""
 
 # Interactive Platform Selection
-echo -e "${BLUE}Step 1: Desktop Platform Selection${NC}"
+echo -e "${BLUE}Step 2: Desktop Platform Selection${NC}"
 echo "Which desktop environment would you like to use?"
 echo "  1) Linux Desktop (default - faster, lighter)"
 echo "  2) Windows 11 Desktop (via OmniBox - requires KVM)"
@@ -113,7 +158,7 @@ esac
 echo ""
 
 # Stop any running services
-echo -e "${BLUE}Step 2: Stopping existing services...${NC}"
+echo -e "${BLUE}Step 3: Stopping existing services...${NC}"
 if [ -f "scripts/stop-stack.sh" ]; then
     ./scripts/stop-stack.sh || true
 fi
@@ -161,7 +206,7 @@ fi
 echo ""
 
 # Clean problematic node_modules (OpenCV build artifacts)
-echo -e "${BLUE}Step 3: Cleaning node_modules...${NC}"
+echo -e "${BLUE}Step 4: Cleaning node_modules...${NC}"
 if [ -d "node_modules/@u4/opencv-build" ]; then
     echo "Removing OpenCV build artifacts..."
     rm -rf node_modules/@u4/opencv-build
@@ -370,7 +415,7 @@ else
 fi
 
 # Build and start Docker stack with fresh build
-echo -e "${BLUE}Step 9: Building Docker containers (this may take several minutes)...${NC}"
+echo -e "${BLUE}Step 10: Building Docker containers (this may take several minutes)...${NC}"
 echo ""
 
 cd docker
@@ -521,6 +566,115 @@ for service_port in "${services[@]}"; do
         all_healthy=false
     fi
 done
+
+#  ═══════════════════════════════════════════════════════
+#   API Key Configuration (Hybrid CLI/GUI)
+#  ═══════════════════════════════════════════════════════
+
+echo ""
+echo -e "${BLUE}================================================${NC}"
+echo -e "${BLUE}   API Key Configuration${NC}"
+echo -e "${BLUE}================================================${NC}"
+echo ""
+echo "Bytebot requires at least one LLM API key to function."
+echo ""
+echo "You have two options:"
+echo "  1) Configure now via CLI (quick setup)"
+echo "  2) Configure later via UI Settings dialog (recommended)"
+echo ""
+
+read -p "Would you like to configure API keys now via CLI? [y/N]: " configure_keys
+
+KEYS_CONFIGURED=false
+
+if [[ $configure_keys =~ ^[Yy]$ ]]; then
+    echo ""
+    echo -e "${YELLOW}Enter your API keys below (press Enter to skip any key):${NC}"
+    echo ""
+
+    # Prompt for each API key
+    read -p "ANTHROPIC_API_KEY (Claude): " anthropic_key
+    read -p "OPENAI_API_KEY (GPT-4): " openai_key
+    read -p "GEMINI_API_KEY (Gemini): " gemini_key
+    read -p "OPENROUTER_API_KEY (Multi-model): " openrouter_key
+
+    # Write keys to docker/.env (only non-empty values)
+    KEYS_ADDED=0
+
+    if [ -n "$anthropic_key" ]; then
+        # Check if key already exists in .env
+        if grep -q "^ANTHROPIC_API_KEY=" docker/.env 2>/dev/null; then
+            sed -i.bak "s|^ANTHROPIC_API_KEY=.*|ANTHROPIC_API_KEY=$anthropic_key|" docker/.env
+        else
+            echo "ANTHROPIC_API_KEY=$anthropic_key" >> docker/.env
+        fi
+        KEYS_ADDED=$((KEYS_ADDED + 1))
+        echo -e "${GREEN}✓ Anthropic API key saved${NC}"
+    fi
+
+    if [ -n "$openai_key" ]; then
+        if grep -q "^OPENAI_API_KEY=" docker/.env 2>/dev/null; then
+            sed -i.bak "s|^OPENAI_API_KEY=.*|OPENAI_API_KEY=$openai_key|" docker/.env
+        else
+            echo "OPENAI_API_KEY=$openai_key" >> docker/.env
+        fi
+        KEYS_ADDED=$((KEYS_ADDED + 1))
+        echo -e "${GREEN}✓ OpenAI API key saved${NC}"
+    fi
+
+    if [ -n "$gemini_key" ]; then
+        if grep -q "^GEMINI_API_KEY=" docker/.env 2>/dev/null; then
+            sed -i.bak "s|^GEMINI_API_KEY=.*|GEMINI_API_KEY=$gemini_key|" docker/.env
+        else
+            echo "GEMINI_API_KEY=$gemini_key" >> docker/.env
+        fi
+        KEYS_ADDED=$((KEYS_ADDED + 1))
+        echo -e "${GREEN}✓ Gemini API key saved${NC}"
+    fi
+
+    if [ -n "$openrouter_key" ]; then
+        if grep -q "^OPENROUTER_API_KEY=" docker/.env 2>/dev/null; then
+            sed -i.bak "s|^OPENROUTER_API_KEY=.*|OPENROUTER_API_KEY=$openrouter_key|" docker/.env
+        else
+            echo "OPENROUTER_API_KEY=$openrouter_key" >> docker/.env
+        fi
+        KEYS_ADDED=$((KEYS_ADDED + 1))
+        echo -e "${GREEN}✓ OpenRouter API key saved${NC}"
+    fi
+
+    # Clean up backup files
+    rm -f docker/.env.bak
+
+    if [ $KEYS_ADDED -gt 0 ]; then
+        KEYS_CONFIGURED=true
+        echo ""
+        echo -e "${GREEN}✓ $KEYS_ADDED API key(s) configured${NC}"
+        echo -e "${BLUE}Restarting bytebot-agent to load new keys...${NC}"
+
+        cd docker
+        docker compose $PROFILE_ARG $COMPOSE_FILES restart bytebot-agent
+        cd ..
+
+        echo -e "${GREEN}✓ Agent restarted${NC}"
+    else
+        echo ""
+        echo -e "${YELLOW}No API keys were entered${NC}"
+    fi
+else
+    echo ""
+    echo -e "${YELLOW}Skipping CLI configuration${NC}"
+fi
+
+echo ""
+if [ "$KEYS_CONFIGURED" = false ]; then
+    echo -e "${YELLOW}⚠️  No API keys configured yet${NC}"
+    echo ""
+    echo "To configure API keys:"
+    echo "  1. Open: http://localhost:9992"
+    echo "  2. Click the Settings icon (⚙️) in the header"
+    echo "  3. Enter your API keys and click 'Save'"
+    echo ""
+fi
 
 echo ""
 if $all_healthy; then

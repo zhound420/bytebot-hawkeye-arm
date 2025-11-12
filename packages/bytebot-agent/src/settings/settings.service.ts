@@ -112,7 +112,9 @@ export class SettingsService implements OnModuleInit {
     } catch (error) {
       this.logger.error(error.message);
       throw new InternalServerErrorException(
-        'Encryption key is not configured. Unable to persist API keys.',
+        'Encryption key is not configured. Unable to save API keys securely. ' +
+        'The encryption key should be auto-generated during setup. ' +
+        'Please restart the agent or run ./scripts/fresh-build.sh'
       );
     }
 
@@ -215,7 +217,11 @@ export class SettingsService implements OnModuleInit {
     const secret = this.configService.get<string>('SETTINGS_ENCRYPTION_KEY');
 
     if (!secret) {
-      throw new Error('SETTINGS_ENCRYPTION_KEY is not configured.');
+      throw new Error(
+        'SETTINGS_ENCRYPTION_KEY is not configured. ' +
+        'This should be auto-generated during setup. ' +
+        'Please run: ./scripts/fresh-build.sh to generate the encryption key.'
+      );
     }
 
     return createHash('sha256').update(secret).digest();

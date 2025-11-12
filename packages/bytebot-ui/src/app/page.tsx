@@ -10,6 +10,7 @@ import { Model } from "@/types";
 import { ModelSelect } from "@/components/ui/model-select";
 import { TaskList } from "@/components/tasks/TaskList";
 import { MODEL_STORAGE_KEY, selectInitialModel } from "./modelStorage";
+import { ApiKeyBanner } from "@/components/ApiKeyBanner";
 
 interface StockPhotoProps {
   src: string;
@@ -157,6 +158,16 @@ export default function Home() {
   return (
     <div className="flex h-screen flex-col overflow-hidden">
       <Header />
+
+      {/* API Key Banner */}
+      <div className="px-4 pt-4 lg:px-8">
+        <ApiKeyBanner
+          onOpenSettings={() => {
+            // Scroll to top and user will see the settings icon in header
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+        />
+      </div>
 
       <main className="flex flex-1 flex-col overflow-hidden">
         {/* Desktop grid layout (50/50 split) - only visible on large screens */}
