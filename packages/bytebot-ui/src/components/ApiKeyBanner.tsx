@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { fetchApiKeyMetadata } from '@/utils/settingsUtils';
+import { fetchApiKeyMetadata, type ApiKeyMetadata } from '@/utils/settingsUtils';
 
 interface ApiKeyBannerProps {
   onOpenSettings?: () => void;
@@ -33,7 +33,7 @@ export function ApiKeyBanner({ onOpenSettings }: ApiKeyBannerProps) {
 
       // Check if any API keys are configured
       const metadata = await fetchApiKeyMetadata();
-      const hasAnyKey = Object.values(metadata).some((meta: any) => meta.configured);
+      const hasAnyKey = Object.values(metadata).some((meta: ApiKeyMetadata | undefined) => meta?.configured);
 
       setShowBanner(!hasAnyKey);
     } catch (error) {
