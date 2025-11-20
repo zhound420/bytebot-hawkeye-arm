@@ -38,7 +38,7 @@ export function Header() {
       try {
         // Check if any API keys are configured
         const metadata = await fetchApiKeyMetadata();
-        const keysConfigured = Object.values(metadata).some((meta: any) => meta.configured);
+        const keysConfigured = Object.values(metadata ?? {}).some((meta: any) => meta.configured);
         setHasApiKeys(keysConfigured);
 
         // Auto-open settings on first visit if no keys configured

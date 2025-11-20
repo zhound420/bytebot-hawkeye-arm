@@ -33,7 +33,7 @@ export function ApiKeyBanner({ onOpenSettings }: ApiKeyBannerProps) {
 
       // Check if any API keys are configured
       const metadata = await fetchApiKeyMetadata();
-      const hasAnyKey = Object.values(metadata).some((meta: any) => meta.configured);
+      const hasAnyKey = Object.values(metadata ?? {}).some((meta: any) => meta.configured);
 
       setShowBanner(!hasAnyKey);
     } catch (error) {
