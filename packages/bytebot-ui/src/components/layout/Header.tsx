@@ -17,7 +17,7 @@ import { Button } from "@/components/ui/button";
 import { ApiKeySettingsDialog } from "@/components/settings/ApiKeySettingsDialog";
 import { ThemeToggle } from "./ThemeToggle";
 import { TrajectoryRecordingBadge } from "@/components/learning/TrajectoryRecordingBadge";
-import { fetchApiKeyMetadata } from "@/utils/settingsUtils";
+import { fetchApiKeyMetadata, type ApiKeyMetadata } from "@/utils/settingsUtils";
 
 export function Header() {
   const { resolvedTheme } = useTheme();
@@ -38,7 +38,7 @@ export function Header() {
       try {
         // Check if any API keys are configured
         const metadata = await fetchApiKeyMetadata();
-        const keysConfigured = Object.values(metadata ?? {}).some((meta: any) => meta.configured);
+        const keysConfigured = Object.values(metadata ?? {}).some((meta: ApiKeyMetadata | undefined) => meta?.configured);
         setHasApiKeys(keysConfigured);
 
         // Auto-open settings on first visit if no keys configured
